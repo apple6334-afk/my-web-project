@@ -32,7 +32,7 @@
       line-height: 1.5;
     }
 
-    .container { max-width: 1440px; margin: 0 auto; }
+    .container { max-width: 1560px; margin: 0 auto; }
 
     header {
       background: linear-gradient(135deg, #0284c7, #0d9488);
@@ -130,6 +130,17 @@
     .btn-del-budget { background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px; }
     .btn-del-budget:hover { color: #ef4444; }
 
+    /* 主架構佈局：左側看板 ＋ 右側 Google 地圖清單 */
+    .main-workspace {
+      display: grid;
+      grid-template-columns: 1fr 310px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .main-workspace { grid-template-columns: 1fr; }
+    }
+
     /* 看板總控制列 */
     .board-controls {
       display: flex;
@@ -152,7 +163,7 @@
     }
     
     .column {
-      flex: 0 0 330px;
+      flex: 0 0 320px;
       border-radius: var(--radius);
       padding: 14px;
       display: flex;
@@ -235,7 +246,6 @@
       margin-bottom: 6px;
     }
     
-    /* 點擊可編輯的時間起訖框 */
     .time-wrapper {
       display: flex;
       align-items: center;
@@ -261,10 +271,17 @@
       outline: none;
     }
 
+    /* 隱藏 number 上下微調箭頭，寬度微調至 44px */
+    .duration-input::-webkit-outer-spin-button,
+    .duration-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
     .duration-input {
-      width: 38px;
-      padding: 1px 2px;
-      font-size: 0.72rem;
+      -moz-appearance: textfield;
+      width: 44px;
+      padding: 1px 0;
+      font-size: 0.75rem;
       font-weight: 700;
       color: var(--muted);
       border: 1px solid transparent;
@@ -346,6 +363,145 @@
       cursor: pointer;
     }
     .btn-main:hover { background: var(--primary-dark); }
+
+    /* ================= 3. Google 地圖口袋清單側邊欄 ================= */
+    .map-sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      position: sticky;
+      top: 16px;
+    }
+    .sidebar-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-head h3 {
+      font-size: 1rem;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .add-place-box {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .add-place-input {
+      flex: 1;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+    .add-place-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .place-category-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 10px;
+      overflow-x: auto;
+    }
+    .cat-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      white-space: nowrap;
+      color: var(--muted);
+    }
+    .cat-btn.active {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: bold;
+      border-color: var(--primary);
+    }
+
+    .places-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .place-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .place-item:hover { background: #f1f5f9; }
+    .place-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .place-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #334155;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .place-desc {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .place-btns {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-map-link {
+      background: #e2e8f0;
+      border: none;
+      padding: 4px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      text-decoration: none;
+      color: #334155;
+    }
+    .btn-map-link:hover { background: #cbd5e1; }
+    .btn-add-to-itinerary {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-add-to-itinerary:hover {
+      background: var(--primary);
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -387,16 +543,45 @@
     <div class="budget-items-container" id="budgetContainer"></div>
   </section>
 
-  <!-- 2. 行程看板 -->
-  <div class="board-controls">
-    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-      <h2>📋 智慧排程看板</h2>
-      <span class="helper-tip">✨ 時間 [起] - [訖] 皆可直接點擊修改！自動重新順延</span>
-    </div>
-    <button class="btn-main" onclick="addNewColumn()">+ 新增天數 / 欄位</button>
-  </div>
+  <!-- 2. 主工作區：左側看板 ＋ 右側 Google 地圖清單 -->
+  <div class="main-workspace">
+    
+    <!-- 左側：看板 -->
+    <div>
+      <div class="board-controls">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <h2>📋 智慧排程看板</h2>
+          <span class="helper-tip">✨ 拖曳換欄/換卡片、點文字直改、點時間自動骨牌排程</span>
+        </div>
+        <button class="btn-main" onclick="addNewColumn()">+ 新增天數 / 欄位</button>
+      </div>
 
-  <div class="board" id="boardContainer" ondragover="onColDragOver(event)" ondrop="onColDrop(event)"></div>
+      <div class="board" id="boardContainer" ondragover="onColDragOver(event)" ondrop="onColDrop(event)"></div>
+    </div>
+
+    <!-- 右側：Google 地圖口袋清單 -->
+    <aside class="map-sidebar">
+      <div class="sidebar-head">
+        <h3>📍 地圖口袋清單</h3>
+        <span style="font-size:0.75rem; color:var(--muted)">點＋直接加入行程</span>
+      </div>
+
+      <div class="add-place-box">
+        <input type="text" id="newPlaceName" class="add-place-input" placeholder="新增口袋地點名稱...">
+        <button class="add-place-btn" onclick="addNewCustomPlace()">新增</button>
+      </div>
+
+      <div class="place-category-tabs">
+        <button class="cat-btn active" onclick="filterPlaces('all', this)">全部</button>
+        <button class="cat-btn" onclick="filterPlaces('scenic', this)">風景景點</button>
+        <button class="cat-btn" onclick="filterPlaces('food', this)">在地美食</button>
+        <button class="cat-btn" onclick="filterPlaces('dessert', this)">冰品甜點</button>
+      </div>
+
+      <div class="places-list" id="placesList"></div>
+    </aside>
+
+  </div>
 </div>
 
 <script>
@@ -423,6 +608,7 @@
     console.warn("Firebase 初始化失敗，將以本地模式運行。", e);
   }
 
+  // 預設資料：包含看板、預算、以及預設 Google 地圖景點清單
   const initialData = {
     budget: [
       { name: "台北 ⇄ 左營 高鐵來回", amount: 2980, type: "per" },
@@ -475,10 +661,26 @@
           { title: "SUP 立式划槳日落團", duration: 120, type: "highlight", desc: "想改划槳看夕陽時替換。" }
         ]
       }
+    ],
+    // 💡 預設 Google 地圖景點清單庫
+    savedPlaces: [
+      { name: "花瓶岩", cat: "scenic", desc: "地標岩石，常有海龜出沒" },
+      { name: "美人洞望海亭", cat: "scenic", desc: "居高臨下俯瞰蔚藍海景" },
+      { name: "落日亭", cat: "scenic", desc: "西南角絕美日落與海風" },
+      { name: "蛤板灣 (威尼斯沙灘)", cat: "scenic", desc: "唯一貝殼沙灘，適合踏浪" },
+      { name: "百年老榕樹秘境", cat: "scenic", desc: "俯瞰厚石裙礁的打卡秘境" },
+      { name: "洪媽媽早餐店", cat: "food", desc: "人氣早餐：琉球粿、賓士包" },
+      { name: "相思麵", cat: "food", desc: "傳統柴燒肉燥乾麵配辣醬" },
+      { name: "大福羊肉海鮮", cat: "food", desc: "羊排酥、炒羊肉與海鮮" },
+      { name: "小蝌蚪起司餅", cat: "food", desc: "爆漿現炸起司餅 (需預約)" },
+      { name: "天媽媽純手工麻花捲", cat: "dessert", desc: "香脆涮嘴伴手禮" },
+      { name: "海龜燒", cat: "dessert", desc: "可愛海龜造型雞蛋糕" },
+      { name: "冰箱冰舖", cat: "dessert", desc: "芒果雪花冰與焦糖奶茶冰" }
     ]
   };
 
   let appState = JSON.parse(JSON.stringify(initialData));
+  let currentCat = 'all';
 
   function pushStateToCloud() {
     if (!tripRef) return;
@@ -512,6 +714,7 @@
       if (cloudData) {
         isRemoteUpdate = true;
         appState = cloudData;
+        if (!appState.savedPlaces) appState.savedPlaces = initialData.savedPlaces;
         renderAll();
         isRemoteUpdate = false;
       } else {
@@ -523,6 +726,7 @@
   function renderAll() {
     renderBudget();
     renderBoard();
+    renderPlaces();
   }
 
   /* ===================== 1. 預算區塊 ===================== */
@@ -584,7 +788,7 @@
     pushStateToCloud();
   }
 
-  /* ===================== 2. 看板渲染（起訖時間皆可點擊修改） ===================== */
+  /* ===================== 2. 行程看板渲染 ===================== */
   const typeOrder = ['leisure', 'food', 'highlight', 'transit'];
 
   function cycleType(colIndex, blockIndex) {
@@ -651,7 +855,6 @@
         blockEl.ondragstart = onBlockDragStart;
         blockEl.ondragend = onBlockDragEnd;
 
-        // 起訖時間直接提供可點選編輯的 input
         let timeControlHtml = col.style === 'timeline'
           ? `<div class="time-wrapper">
                <input type="text" class="time-input" value="${sStr}" title="修改開始時間" onchange="updateBlockStartTime(${colIndex}, ${blockIndex}, this.value)">
@@ -686,25 +889,22 @@
     });
   }
 
-  // 修改開始時間：若是第一張卡片，自動連動調整當日出發時間
   function updateBlockStartTime(colIndex, blockIndex, newStartStr) {
     const newStartMins = parseTimeToMinutes(newStartStr);
     if (blockIndex === 0) {
       appState.columns[colIndex].startTime = formatMinutesToTime(newStartMins);
     } else {
-      // 若是中間卡片改早，推算前置或直接調整首發時間連鎖
       appState.columns[colIndex].startTime = formatMinutesToTime(newStartMins);
     }
     renderBoard();
     pushStateToCloud();
   }
 
-  // 修改結束時間：依 (結束 - 開始) 反推時長，骨牌順推後續卡片
   function updateBlockEndTime(colIndex, blockIndex, startStr, newEndStr) {
     const sMins = parseTimeToMinutes(startStr);
     const eMins = parseTimeToMinutes(newEndStr);
     let diff = eMins - sMins;
-    if (diff <= 0) diff = 30; // 防止負值或 0
+    if (diff <= 0) diff = 30;
 
     appState.columns[colIndex].blocks[blockIndex].duration = diff;
     renderBoard();
@@ -772,7 +972,85 @@
     pushStateToCloud();
   }
 
-  /* ===================== 3. 拖曳引擎 ===================== */
+  /* ===================== 3. Google 地圖口袋清單邏輯 ===================== */
+  function filterPlaces(cat, btn) {
+    currentCat = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderPlaces();
+  }
+
+  function renderPlaces() {
+    const list = document.getElementById('placesList');
+    list.innerHTML = '';
+
+    const places = appState.savedPlaces || initialData.savedPlaces;
+    places.forEach((p, idx) => {
+      if (currentCat !== 'all' && p.cat !== currentCat) return;
+
+      // Google 地圖搜尋網址
+      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('小琉球 ' + p.name)}`;
+
+      const item = document.createElement('div');
+      item.className = 'place-item';
+      item.innerHTML = `
+        <div class="place-info">
+          <span class="place-name">${p.name}</span>
+          <span class="place-desc">${p.desc || ''}</span>
+        </div>
+        <div class="place-btns">
+          <a href="${mapUrl}" target="_blank" class="btn-map-link" title="在 Google 地圖開啟定位">🗺️</a>
+          <button class="btn-add-to-itinerary" onclick="addPlaceToItinerary('${p.name}', '${p.desc || ''}', '${p.cat}')" title="加入行程">＋</button>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  // 將口袋清單加入第一天（或讓使用者選擇天數）
+  function addPlaceToItinerary(name, desc, cat) {
+    // 預設將活動分類對齊顏色
+    let type = 'leisure';
+    if (cat === 'food') type = 'food';
+    if (cat === 'dessert') type = 'food';
+
+    // 詢問加入哪一天
+    const colNames = appState.columns.map((c, i) => `${i + 1}. ${c.title}`).join('\n');
+    const choice = prompt(`要將【${name}】加入哪一天？\n請輸入編號：\n${colNames}`, "1");
+    if (!choice) return;
+
+    const chosenIndex = parseInt(choice) - 1;
+    if (chosenIndex >= 0 && chosenIndex < appState.columns.length) {
+      if (!appState.columns[chosenIndex].blocks) appState.columns[chosenIndex].blocks = [];
+      appState.columns[chosenIndex].blocks.push({
+        title: name,
+        duration: 60,
+        type: type,
+        desc: desc
+      });
+      renderBoard();
+      pushStateToCloud();
+    }
+  }
+
+  function addNewCustomPlace() {
+    const input = document.getElementById('newPlaceName');
+    const name = input.value.trim();
+    if (!name) return;
+
+    if (!appState.savedPlaces) appState.savedPlaces = [];
+    appState.savedPlaces.unshift({
+      name: name,
+      cat: "food",
+      desc: "自訂私房景點"
+    });
+
+    input.value = '';
+    renderPlaces();
+    pushStateToCloud();
+  }
+
+  /* ===================== 4. 拖曳引擎 ===================== */
   let dragType = null;
   let draggedBlockCol = null;
   let draggedBlockIndex = null;
