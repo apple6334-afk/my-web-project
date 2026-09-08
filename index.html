@@ -133,7 +133,7 @@
     /* 主架構佈局 */
     .main-workspace {
       display: grid;
-      grid-template-columns: 1fr 320px;
+      grid-template-columns: 1fr 330px;
       gap: 20px;
       align-items: start;
     }
@@ -389,33 +389,71 @@
       gap: 6px;
     }
 
+    /* 新增口袋地點表單 */
     .add-place-box {
       display: flex;
+      flex-direction: column;
       gap: 6px;
       margin-bottom: 12px;
+      background: #f8fafc;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
     .add-place-input {
-      flex: 1;
+      width: 100%;
       padding: 6px 8px;
       border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 0.8rem;
     }
+    .add-place-row {
+      display: flex;
+      gap: 6px;
+    }
+    .add-place-select {
+      flex: 1;
+      padding: 4px 6px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.78rem;
+      background: white;
+    }
     .add-place-btn {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 0 10px;
+      padding: 0 12px;
       border-radius: 6px;
       font-size: 0.8rem;
       cursor: pointer;
+      font-weight: 600;
     }
+    .add-place-btn:hover { background: var(--primary-dark); }
+
+    .place-category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .btn-add-cat {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0 2px;
+    }
+    .btn-add-cat:hover { text-decoration: underline; }
 
     .place-category-tabs {
       display: flex;
       gap: 4px;
       margin-bottom: 10px;
       overflow-x: auto;
+      padding-bottom: 2px;
     }
     .cat-btn {
       background: #f1f5f9;
@@ -426,6 +464,9 @@
       cursor: pointer;
       white-space: nowrap;
       color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .cat-btn.active {
       background: var(--primary-light);
@@ -433,12 +474,19 @@
       font-weight: bold;
       border-color: var(--primary);
     }
+    .cat-del-x {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .cat-del-x:hover { color: #ef4444; }
 
     .places-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-height: 520px;
+      max-height: 480px;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -504,7 +552,6 @@
       color: white;
     }
 
-    /* 刪除口袋地點按鈕 */
     .btn-del-place {
       background: none;
       border: none;
@@ -575,24 +622,29 @@
       <div class="board" id="boardContainer" ondragover="onColDragOver(event)" ondrop="onColDrop(event)"></div>
     </div>
 
-    <!-- 右側：Google 地圖口袋清單 (含刪除按鈕) -->
+    <!-- 右側：Google 地圖口袋清單 (分類與備註皆可自訂) -->
     <aside class="map-sidebar">
       <div class="sidebar-head">
         <h3>📍 地圖口袋清單</h3>
         <span style="font-size:0.75rem; color:var(--muted)">點＋排入行程</span>
       </div>
 
+      <!-- 新增口袋地點表單 (自訂分類與備註) -->
       <div class="add-place-box">
-        <input type="text" id="newPlaceName" class="add-place-input" placeholder="新增口袋地點名稱...">
-        <button class="add-place-btn" onclick="addNewCustomPlace()">新增</button>
+        <input type="text" id="newPlaceName" class="add-place-input" placeholder="地點名稱 (如：卡友牛肉麵)...">
+        <input type="text" id="newPlaceDesc" class="add-place-input" placeholder="備註/特色 (如：必吃紅燒牛肉麵)...">
+        <div class="add-place-row">
+          <select id="newPlaceCat" class="add-place-select"></select>
+          <button class="add-place-btn" onclick="addNewCustomPlace()">＋ 加入清單</button>
+        </div>
       </div>
 
-      <div class="place-category-tabs">
-        <button class="cat-btn active" onclick="filterPlaces('all', this)">全部</button>
-        <button class="cat-btn" onclick="filterPlaces('scenic', this)">風景景點</button>
-        <button class="cat-btn" onclick="filterPlaces('food', this)">在地美食</button>
-        <button class="cat-btn" onclick="filterPlaces('dessert', this)">冰品甜點</button>
+      <div class="place-category-header">
+        <span style="font-size:0.75rem; font-weight:bold; color:var(--muted)">分類標籤：</span>
+        <button class="btn-add-cat" onclick="addNewCategory()">＋新增分類標籤</button>
       </div>
+
+      <div class="place-category-tabs" id="categoryTabs"></div>
 
       <div class="places-list" id="placesList"></div>
     </aside>
@@ -677,6 +729,12 @@
         ]
       }
     ],
+    // 💡 分類定義（可自訂）
+    categories: [
+      { id: "scenic", name: "風景景點" },
+      { id: "food", name: "在地美食" },
+      { id: "dessert", name: "冰品甜點" }
+    ],
     savedPlaces: [
       { name: "花瓶岩", cat: "scenic", desc: "地標岩石，常有海龜出沒" },
       { name: "美人洞望海亭", cat: "scenic", desc: "居高臨下俯瞰蔚藍海景" },
@@ -729,6 +787,7 @@
         isRemoteUpdate = true;
         appState = cloudData;
         if (!appState.savedPlaces) appState.savedPlaces = initialData.savedPlaces;
+        if (!appState.categories) appState.categories = initialData.categories;
         renderAll();
         isRemoteUpdate = false;
       } else {
@@ -740,6 +799,7 @@
   function renderAll() {
     renderBudget();
     renderBoard();
+    renderCategories();
     renderPlaces();
   }
 
@@ -986,12 +1046,68 @@
     pushStateToCloud();
   }
 
-  /* ===================== 3. Google 地圖口袋清單邏輯 ===================== */
-  function filterPlaces(cat, btn) {
-    currentCat = cat;
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  /* ===================== 3. Google 地圖口袋清單與分類管理 ===================== */
+  function renderCategories() {
+    const tabsContainer = document.getElementById('categoryTabs');
+    const selectEl = document.getElementById('newPlaceCat');
+    tabsContainer.innerHTML = '';
+    selectEl.innerHTML = '';
+
+    const cats = appState.categories || initialData.categories;
+
+    // 「全部」按鈕
+    const allBtn = document.createElement('button');
+    allBtn.className = `cat-btn ${currentCat === 'all' ? 'active' : ''}`;
+    allBtn.innerText = '全部';
+    allBtn.onclick = () => filterPlaces('all');
+    tabsContainer.appendChild(allBtn);
+
+    cats.forEach((c) => {
+      // 標籤頁
+      const btn = document.createElement('button');
+      btn.className = `cat-btn ${currentCat === c.id ? 'active' : ''}`;
+      btn.innerHTML = `<span>${c.name}</span><span class="cat-del-x" onclick="deleteCategory('${c.id}', event)" title="刪除此分類">×</span>`;
+      btn.onclick = (e) => {
+        if (e.target.classList.contains('cat-del-x')) return;
+        filterPlaces(c.id);
+      };
+      tabsContainer.appendChild(btn);
+
+      // 下拉選單 option
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.innerText = c.name;
+      selectEl.appendChild(opt);
+    });
+  }
+
+  function filterPlaces(catId) {
+    currentCat = catId;
+    renderCategories();
     renderPlaces();
+  }
+
+  function addNewCategory() {
+    const name = prompt("請輸入新分類名稱（如：伴手禮特產、特色咖啡廳）：");
+    if (!name) return;
+    const id = "cat_" + Date.now();
+    if (!appState.categories) appState.categories = [];
+    appState.categories.push({ id, name });
+    currentCat = id;
+    renderCategories();
+    renderPlaces();
+    pushStateToCloud();
+  }
+
+  function deleteCategory(catId, e) {
+    e.stopPropagation();
+    if (confirm("確定要刪除這個分類標籤嗎？")) {
+      appState.categories = appState.categories.filter(c => c.id !== catId);
+      if (currentCat === catId) currentCat = 'all';
+      renderCategories();
+      renderPlaces();
+      pushStateToCloud();
+    }
   }
 
   function renderPlaces() {
@@ -1052,18 +1168,28 @@
   }
 
   function addNewCustomPlace() {
-    const input = document.getElementById('newPlaceName');
-    const name = input.value.trim();
-    if (!name) return;
+    const nameInput = document.getElementById('newPlaceName');
+    const descInput = document.getElementById('newPlaceDesc');
+    const catSelect = document.getElementById('newPlaceCat');
+
+    const name = nameInput.value.trim();
+    const desc = descInput.value.trim();
+    const cat = catSelect.value || "food";
+
+    if (!name) {
+      alert("請輸入地點名稱！");
+      return;
+    }
 
     if (!appState.savedPlaces) appState.savedPlaces = [];
     appState.savedPlaces.unshift({
       name: name,
-      cat: "food",
-      desc: "自訂私房景點"
+      cat: cat,
+      desc: desc || "口袋景點推薦"
     });
 
-    input.value = '';
+    nameInput.value = '';
+    descInput.value = '';
     renderPlaces();
     pushStateToCloud();
   }
