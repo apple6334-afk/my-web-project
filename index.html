@@ -151,9 +151,8 @@
       align-items: flex-start;
     }
     
-    /* 欄位整體樣式 (支援拖曳) */
     .column {
-      flex: 0 0 320px;
+      flex: 0 0 330px;
       border-radius: var(--radius);
       padding: 14px;
       display: flex;
@@ -161,10 +160,7 @@
       min-height: 540px;
       transition: opacity 0.2s, transform 0.2s;
     }
-    .column.dragging-col {
-      opacity: 0.35;
-      transform: scale(0.97);
-    }
+    .column.dragging-col { opacity: 0.35; transform: scale(0.97); }
     .column.timeline-col { background: #e2e8f0; border: 1px solid #cbd5e1; }
     .column.pool-col { background: #f8fafc; border: 2px dashed #94a3b8; }
 
@@ -203,7 +199,7 @@
       margin-bottom: 10px;
     }
     .start-time-input {
-      border: 1px solid var(--border); border-radius: 4px; padding: 2px 4px; font-weight: 700; color: var(--primary-dark); background: white; width: 70px; text-align: center;
+      border: 1px solid var(--border); border-radius: 4px; padding: 2px 4px; font-weight: 700; color: var(--primary-dark); background: white; width: 68px; text-align: center;
     }
 
     .card-list {
@@ -238,14 +234,36 @@
       align-items: center;
       margin-bottom: 6px;
     }
-    .time-wrapper { display: flex; align-items: center; gap: 4px; }
-    .block-time {
-      font-size: 0.78rem; font-weight: 800; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #334155;
-    }
     
+    /* 點擊可編輯的時間起訖框 */
+    .time-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .time-input {
+      width: 48px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      background: transparent;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #334155;
+      text-align: center;
+      padding: 1px 0;
+    }
+    .time-input:focus, .time-input:hover {
+      background: white;
+      border-color: var(--primary);
+      outline: none;
+    }
+
     .duration-input {
-      width: 42px;
-      padding: 1px 3px;
+      width: 38px;
+      padding: 1px 2px;
       font-size: 0.72rem;
       font-weight: 700;
       color: var(--muted);
@@ -373,12 +391,11 @@
   <div class="board-controls">
     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
       <h2>📋 智慧排程看板</h2>
-      <span class="helper-tip">✨ 按住 ⠿ 可拖曳調整天數順序！卡片與預算皆可直接點擊修改</span>
+      <span class="helper-tip">✨ 時間 [起] - [訖] 皆可直接點擊修改！自動重新順延</span>
     </div>
     <button class="btn-main" onclick="addNewColumn()">+ 新增天數 / 欄位</button>
   </div>
 
-  <!-- 支援整欄拖曳排序的容器 -->
   <div class="board" id="boardContainer" ondragover="onColDragOver(event)" ondrop="onColDrop(event)"></div>
 </div>
 
@@ -567,7 +584,7 @@
     pushStateToCloud();
   }
 
-  /* ===================== 2. 看板與卡片渲染 ===================== */
+  /* ===================== 2. 看板渲染（起訖時間皆可點擊修改） ===================== */
   const typeOrder = ['leisure', 'food', 'highlight', 'transit'];
 
   function cycleType(colIndex, blockIndex) {
@@ -588,7 +605,6 @@
       colDiv.setAttribute('data-col-index', colIndex);
       colDiv.draggable = true;
 
-      // 欄位拖曳事件
       colDiv.ondragstart = onColDragStart;
       colDiv.ondragend = onColDragEnd;
 
@@ -615,13 +631,13 @@
 
       (col.blocks || []).forEach((b, blockIndex) => {
         const duration = b.duration || 60;
-        let timeLabel = "待排";
+        let sStr = "待排";
+        let eStr = "待排";
         
         if (col.style === 'timeline') {
-          const sStr = formatMinutesToTime(currentMins);
+          sStr = formatMinutesToTime(currentMins);
           const eMins = currentMins + duration;
-          const eStr = formatMinutesToTime(eMins);
-          timeLabel = `${sStr} - ${eStr}`;
+          eStr = formatMinutesToTime(eMins);
           currentMins = eMins;
         }
 
@@ -632,18 +648,29 @@
         blockEl.setAttribute('data-col-index', colIndex);
         blockEl.setAttribute('data-block-index', blockIndex);
         
-        // 卡片拖曳事件
         blockEl.ondragstart = onBlockDragStart;
         blockEl.ondragend = onBlockDragEnd;
 
+        // 起訖時間直接提供可點選編輯的 input
+        let timeControlHtml = col.style === 'timeline'
+          ? `<div class="time-wrapper">
+               <input type="text" class="time-input" value="${sStr}" title="修改開始時間" onchange="updateBlockStartTime(${colIndex}, ${blockIndex}, this.value)">
+               <span style="font-size:0.75rem; color:var(--muted);">-</span>
+               <input type="text" class="time-input" value="${eStr}" title="修改結束時間" onchange="updateBlockEndTime(${colIndex}, ${blockIndex}, '${sStr}', this.value)">
+               <span style="font-size:0.75rem; color:var(--muted);">(</span>
+               <input type="number" class="duration-input" value="${duration}" title="點擊修改時長（分鐘）" onchange="updateBlockField(${colIndex}, ${blockIndex}, 'duration', parseInt(this.value)||30)">
+               <span style="font-size:0.75rem; color:var(--muted);">分)</span>
+             </div>`
+          : `<div class="time-wrapper">
+               <span class="time-input" style="width:auto; padding:0 4px;">待排</span>
+               <span style="font-size:0.75rem; color:var(--muted);">(</span>
+               <input type="number" class="duration-input" value="${duration}" title="點擊修改時長（分鐘）" onchange="updateBlockField(${colIndex}, ${blockIndex}, 'duration', parseInt(this.value)||30)">
+               <span style="font-size:0.75rem; color:var(--muted);">分)</span>
+             </div>`;
+
         blockEl.innerHTML = `
           <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">${timeLabel}</span>
-              <span style="font-size:0.75rem; color:var(--muted);">(</span>
-              <input type="number" class="duration-input" value="${duration}" title="點擊修改時長（分鐘）" onchange="updateBlockField(${colIndex}, ${blockIndex}, 'duration', parseInt(this.value)||30)">
-              <span style="font-size:0.75rem; color:var(--muted);">分)</span>
-            </div>
+            ${timeControlHtml}
             <div class="block-actions">
               <div class="type-switcher" data-type="${b.type || 'leisure'}" onclick="cycleType(${colIndex}, ${blockIndex})"></div>
               <button class="btn-icon" onclick="deleteBlock(${colIndex}, ${blockIndex})">×</button>
@@ -657,6 +684,31 @@
 
       container.appendChild(colDiv);
     });
+  }
+
+  // 修改開始時間：若是第一張卡片，自動連動調整當日出發時間
+  function updateBlockStartTime(colIndex, blockIndex, newStartStr) {
+    const newStartMins = parseTimeToMinutes(newStartStr);
+    if (blockIndex === 0) {
+      appState.columns[colIndex].startTime = formatMinutesToTime(newStartMins);
+    } else {
+      // 若是中間卡片改早，推算前置或直接調整首發時間連鎖
+      appState.columns[colIndex].startTime = formatMinutesToTime(newStartMins);
+    }
+    renderBoard();
+    pushStateToCloud();
+  }
+
+  // 修改結束時間：依 (結束 - 開始) 反推時長，骨牌順推後續卡片
+  function updateBlockEndTime(colIndex, blockIndex, startStr, newEndStr) {
+    const sMins = parseTimeToMinutes(startStr);
+    const eMins = parseTimeToMinutes(newEndStr);
+    let diff = eMins - sMins;
+    if (diff <= 0) diff = 30; // 防止負值或 0
+
+    appState.columns[colIndex].blocks[blockIndex].duration = diff;
+    renderBoard();
+    pushStateToCloud();
   }
 
   function updateBlockField(colIndex, blockIndex, field, val) {
@@ -720,13 +772,12 @@
     pushStateToCloud();
   }
 
-  /* ===================== 3. 拖曳引擎 (分流卡片與欄位) ===================== */
-  let dragType = null; // 'block' 或 'column'
+  /* ===================== 3. 拖曳引擎 ===================== */
+  let dragType = null;
   let draggedBlockCol = null;
   let draggedBlockIndex = null;
   let draggedColIndex = null;
 
-  // 卡片拖曳
   function onBlockDragStart(e) {
     if (e.target.tagName === 'INPUT') {
       e.preventDefault();
@@ -799,7 +850,6 @@
     }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
-  // 欄位拖曳 (Column Reorder)
   function onColDragStart(e) {
     if (e.target.tagName === 'INPUT' || dragType === 'block') {
       return;
