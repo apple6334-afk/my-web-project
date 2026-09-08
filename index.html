@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 北港祈福慢旅 & 媽祖盃賽事 行程表</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'sans-serif'],
+          },
+          colors: {
+            matsu: {
+              50: '#fdf4f2',
+              100: '#fbe7e4',
+              200: '#f7d3ce',
+              500: '#dc4c38',
+              600: '#c53926',
+              700: '#a32b1b',
+              800: '#87261a',
+              900: '#70241b'
+            },
+            amberwarm: '#f59e0b'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-amber-50/40 text-stone-800 antialiased pb-20">
+
+  <!-- 頂部橫幅 Hero Header -->
+  <header class="relative bg-gradient-to-br from-matsu-800 via-matsu-700 to-amber-700 text-white shadow-lg overflow-hidden">
+    <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl pointer-events-none">
+      <i class="fa-solid fa-place-of-worship"></i>
+    </div>
+    <div class="max-w-3xl mx-auto px-5 pt-8 pb-9 relative z-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-semibold tracking-wider text-amber-200 mb-3">
+        <i class="fa-solid fa-cloud-sun"></i> 兩天一夜 孝親慢活 × 熱血奔馳
+      </div>
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">
+        2026 北港祈福漫遊<br>
+        <span class="text-amber-300">媽祖盃賽事</span> 家庭專屬行程
+      </h1>
+      <p class="mt-2 text-stone-200 text-sm sm:text-base flex items-center gap-2">
+        <i class="fa-regular fa-calendar-check text-amber-300"></i> 2026.11.20 (五) ~ 11.21 (六)
+        <span class="text-white/40">|</span>
+        <i class="fa-solid fa-location-dot text-amber-300"></i> 基隆 ⇄ 雲林北港
+      </p>
+
+      <!-- 快速亮點標籤 -->
+      <div class="grid grid-cols-3 gap-2.5 mt-5 text-center text-xs">
+        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+          <p class="text-stone-300">出發起點</p>
+          <p class="font-bold text-sm text-white mt-0.5">基隆晨光啟程</p>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+          <p class="text-stone-300">賽事焦點</p>
+          <p class="font-bold text-sm text-amber-300 mt-0.5">北港溪畔熱跑</p>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+          <p class="text-stone-300">長輩步調</p>
+          <p class="font-bold text-sm text-white mt-0.5">舒適不累無障礙</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 -mt-3 relative z-20 space-y-6">
+
+    <!-- 長輩溫馨小卡 -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-amber-200/70 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 shrink-0 text-lg">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </div>
+      <div class="text-xs sm:text-sm text-stone-600">
+        <strong class="text-stone-900 block font-bold text-sm mb-0.5">專為長輩量身設計的節奏！</strong>
+        週五白天出發避塞車、中途安排休息站、週六清晨長輩「免早起」，在飯店睡飽吃早餐再散步會合。
+      </div>
+    </div>
+
+    <!-- 日期切換 Tab -->
+    <div class="flex rounded-2xl bg-stone-200/80 p-1 text-sm font-bold shadow-inner">
+      <button id="tab-day1" onclick="switchDay(1)" class="flex-1 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 bg-white text-matsu-700 shadow">
+        <i class="fa-regular fa-calendar text-xs"></i> 11/20 (週五) 啟程與朝聖
+      </button>
+      <button id="tab-day2" onclick="switchDay(2)" class="flex-1 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-stone-600 hover:text-stone-900">
+        <i class="fa-solid fa-person-running text-xs"></i> 11/21 (週六) 賽事與返程
+      </button>
+    </div>
+
+    <section id="day1-content" class="space-y-4">
+      <div class="flex items-center justify-between pb-1 border-b border-stone-200">
+        <h2 class="text-lg font-black text-stone-800 flex items-center gap-2">
+          <span class="w-2.5 h-6 bg-matsu-600 rounded-full inline-block"></span>
+          Day 1 行程時間軸
+        </h2>
+        <span class="text-xs text-stone-500 font-medium">基隆 ➔ 北港朝天宮 ➔ 老街</span>
+      </div>
+
+      <!-- 時間卡片 1 -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-stone-200/80 hover:border-amber-400 transition">
+        <div class="flex items-start gap-3">
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shrink-0 mt-0.5">
+            08:30 - 12:30
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-stone-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-car-side text-amber-600"></i> 基隆啟程 ➔ 悠閒南下
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              避開基隆台北晨間上班車潮，一路走國道 1 號南下。中途於 <strong class="text-stone-800">泰安休息站</strong> 停靠 25 分鐘，讓外婆下車上洗手間、舒活腿部筋骨。
+            </p>
+            <div class="mt-2 text-xs text-stone-500 flex items-center gap-1.5">
+              <i class="fa-solid fa-shield-halved text-emerald-600"></i> 長輩不趕路，車速平穩最安心
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時間卡片 2 -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-stone-200/80 hover:border-amber-400 transition">
+        <div class="flex items-start gap-3">
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shrink-0 mt-0.5">
+            12:30 - 14:00
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-stone-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-bowl-rice text-amber-600"></i> 抵達北港 ➔ 地道溫補午餐
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              品嚐北港特色小吃：軟嫩好嚼的煎盤粿、香濃古早味麵線糊加蛋黃、或清爽暖胃的假魚肚羹，長輩牙口無負擔。
+            </p>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <span class="px-2 py-0.5 bg-stone-100 text-stone-700 text-xs rounded-md">陳家煎盤粿</span>
+              <span class="px-2 py-0.5 bg-stone-100 text-stone-700 text-xs rounded-md">阿豐麵線糊</span>
+              <span class="px-2 py-0.5 bg-stone-100 text-stone-700 text-xs rounded-md">厚德誠羹品</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時間卡片 3 -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-stone-200/80 hover:border-amber-400 transition">
+        <div class="flex items-start gap-3">
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shrink-0 mt-0.5">
+            14:00 - 15:30
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-stone-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-bed text-blue-600"></i> 飯店 Check-in ➔ 養精蓄銳午休
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              入住朝天宮週邊旅宿，放下所有大件行李。坐了半天車，讓外婆與爸媽在房內躺平小歇 1 小時，儲備傍晚逛街好體力。
+            </p>
+            <div class="mt-2 text-xs text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg inline-flex items-center gap-1">
+              <i class="fa-solid fa-info-circle"></i> 建議優先停妥車輛，賽事日前後以步行代步最便利
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時間卡片 4 -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-stone-200/80 hover:border-amber-400 transition">
+        <div class="flex items-start gap-3">
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shrink-0 mt-0.5">
+            15:30 - 18:00
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-stone-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-place-of-worship text-matsu-600"></i> 朝天宮祈福參拜 ➔ 老街採買伴手禮
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              傍晚氣溫宜人、廟埕人潮舒緩。全家漫步至 <strong>國定古蹟北港朝天宮</strong> 虔誠祈福（祈求家庭安康、隔天賽事順遂平安）。隨後在中山路散步挑選特產：現壓黑麻油、花生酥、狀元喜餅。
+            </p>
+            <div class="mt-2.5 flex items-center gap-2">
+              <a href="https://maps.google.com/?cid=8826082841404551118" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold">
+                <i class="fa-solid fa-map-location-dot text-matsu-600"></i> 朝天宮地圖導航
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時間卡片 5 -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-stone-200/80 hover:border-amber-400 transition">
+        <div class="flex items-start gap-3">
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shrink-0 mt-0.5">
+            18:00 - 21:00
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-stone-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-utensils text-amber-600"></i> 晚餐時光 ➔ 賽前早點就寢
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              晚餐享用老受鴨肉飯或在地清燉牛肉湯，補充優質碳水與元氣。跑者提前準備好賽事裝備與跑鞋，21:30 前熄燈就寢。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="day2-content" class="hidden space-y-4">
+      <div class="flex items-center justify-between pb-1 border-b border-stone-200">
+        <h2 class="text-lg font-black text-stone-800 flex items-center gap-2">
+          <span class="w-2.5 h-6 bg-matsu-600 rounded-full inline-block"></span>
+          Day 2 行程時間軸（清晨雙線並行）
+        </h2>
+        <span class="text-xs text-stone-500 font-medium">賽事熱跑 ➔ 文化中心 ➔ 賦歸</span>
+      </div>
+
+      <!-- 核心對比：清晨雙線卡片 -->
+      <div class="bg-gradient-to-r from-stone-900 to-stone-800 rounded-2xl p-4 text-white shadow-md">
+        <div class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-arrows-split-up-and-left"></i> 清晨貼心分流．各自精彩
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+          <!-- 跑者組 -->
+          <div class="bg-white/10 rounded-xl p-3 border border-white/10">
+            <div class="flex items-center gap-2 text-amber-300 font-bold text-sm">
+              <i class="fa-solid fa-running"></i> 參賽選手組
+            </div>
+            <ul class="text-xs text-stone-200 mt-2 space-y-1.5">
+              <li><strong class="text-white">05:40</strong> 起床著裝、補充能量香蕉</li>
+              <li><strong class="text-white">06:15</strong> 步行至北港溪畔會場集結寄物</li>
+              <li><strong class="text-white">06:40-06:50</strong> 陸續鳴槍起跑，奔向終點！</li>
+              <li><strong class="text-white">08:40-09:30</strong> 完賽領獎、退晶片返宿</li>
+            </ul>
+          </div>
+
+          <!-- 家人組 -->
+          <div class="bg-white/10 rounded-xl p-3 border border-white/10">
+            <div class="flex items-center gap-2 text-emerald-300 font-bold text-sm">
+              <i class="fa-solid fa-mug-hot"></i> 長輩慢活組
+            </div>
+            <ul class="text-xs text-stone-200 mt-2 space-y-1.5">
+              <li><strong class="text-white">無需起早</strong> 睡到自然醒，溫暖舒適</li>
+              <li><strong class="text-white">07:30</strong> 在飯店或附近享用熱呼呼早餐</li>
+              <li><strong class="text-white">08:30</strong> 散步到廟前涼亭感受慶典氛圍</li>
+              <li><strong class="text-white">09:30</strong> 與完賽歸來的選手們會合抱抱！</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時間卡片：梳洗整補 -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-stone-200/80 hover:border-amber-400 transition">
+        <div class="flex items-start gap-3">
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shrink-0 mt-0.5">
+            09:30 - 10:30
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-stone-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-shower text-blue-600"></i> 回房盥洗 ➔ 整理行囊退房
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              選手洗去汗水、換上舒適便服。檢查購買的麻油、糕餅等伴手禮並整理至車廂，準備出發下一個舒適景點。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時間卡片：文化中心 -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-stone-200/80 hover:border-amber-400 transition">
+        <div class="flex items-start gap-3">
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shrink-0 mt-0.5">
+            10:45 - 12:00
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-stone-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-masks-theater text-matsu-600"></i> 雲林縣北港文化中心 ➔ 舒適看展
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              距離老街車程僅約 5 分鐘。全館空調、設有電梯與全平整無障礙坡道，能細細觀賞北港傳統花燈雕琢、傳統陣頭大仙尪與宗教信仰歷史，長輩走累了隨處有沙發與長椅可以休息。
+            </p>
+            <div class="mt-2.5 flex items-center gap-2">
+              <a href="https://maps.google.com/?cid=6349029640208711135" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold">
+                <i class="fa-solid fa-map-location-dot text-matsu-600"></i> 文化中心導航 (公園路66號)
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時間卡片：慶功午餐與回程 -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-stone-200/80 hover:border-amber-400 transition">
+        <div class="flex items-start gap-3">
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shrink-0 mt-0.5">
+            12:15 - 17:30
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-stone-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-champagne-glasses text-amber-600"></i> 完賽慶功午宴 ➔ 歡樂賦歸基隆
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              <strong class="text-stone-900">12:15 - 13:30</strong> 在地台菜合菜或古早味料理（慶祝全員無傷完賽！）。<br>
+              <strong class="text-stone-900">13:30</strong> 上國道 1 號北返，午後長輩可在車上安心補眠，預計傍晚 17:30 抵達基隆溫暖的家。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-stone-200/80">
+      <h3 class="font-black text-stone-800 text-base flex items-center gap-2 mb-3">
+        <i class="fa-solid fa-clipboard-check text-matsu-600"></i> 出發行前 Check List（點擊打勾）
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
+        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-stone-50 cursor-pointer">
+          <input type="checkbox" class="w-4 h-4 rounded text-matsu-600 focus:ring-matsu-500">
+          <span>外婆輕便摺疊椅 / 登山手杖</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-stone-50 cursor-pointer">
+          <input type="checkbox" class="w-4 h-4 rounded text-matsu-600 focus:ring-matsu-500">
+          <span>長輩常備藥品 & 保暖薄外套</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-stone-50 cursor-pointer">
+          <input type="checkbox" class="w-4 h-4 rounded text-matsu-600 focus:ring-matsu-500">
+          <span>賽事號碼布、計時晶片、別針</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-stone-50 cursor-pointer">
+          <input type="checkbox" class="w-4 h-4 rounded text-matsu-600 focus:ring-matsu-500">
+          <span>大會指定寄物袋（自備束口袋）</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-stone-50 cursor-pointer">
+          <input type="checkbox" class="w-4 h-4 rounded text-matsu-600 focus:ring-matsu-500">
+          <span>健保卡 & 換洗乾淨衣物 2 套</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-stone-50 cursor-pointer">
+          <input type="checkbox" class="w-4 h-4 rounded text-matsu-600 focus:ring-matsu-500">
+          <span>採買麻油糕餅環保提袋</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="bg-amber-100/50 rounded-2xl p-4 sm:p-5 border border-amber-300/60">
+      <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2 mb-2">
+        <i class="fa-solid fa-circle-info text-amber-700"></i> 重要地標小抄
+      </h3>
+      <div class="space-y-2 text-xs text-stone-700">
+        <div class="flex justify-between items-center py-1 border-b border-amber-200/60">
+          <span class="font-semibold text-stone-900">路跑會場（北港溪畔河堤停車場）</span>
+          <span class="text-stone-500">步行至朝天宮約 5 分鐘</span>
+        </div>
+        <div class="flex justify-between items-center py-1 border-b border-amber-200/60">
+          <span class="font-semibold text-stone-900">國定古蹟 北港朝天宮</span>
+          <span class="text-stone-500">雲林縣北港鎮中山路178號</span>
+        </div>
+        <div class="flex justify-between items-center py-1 border-b border-amber-200/60">
+          <span class="font-semibold text-stone-900">雲林縣北港文化中心</span>
+          <span class="text-stone-500">雲林縣北港鎮公園路66號 (有停車場)</span>
+        </div>
+        <div class="flex justify-between items-center py-1">
+          <span class="font-semibold text-stone-900">中國醫藥大學北港附設醫院（媽祖醫院）</span>
+          <span class="text-stone-500">醫療備援 (05) 783-7901</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="fixed bottom-3 inset-x-0 max-w-sm mx-auto px-4 z-50">
+    <div class="bg-stone-900/90 backdrop-blur-md text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center justify-between border border-white/20">
+      <div class="flex items-center gap-2 text-xs">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>媽祖保佑．全家順心平安</span>
+      </div>
+      <button onclick="sharePlan()" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold rounded-full text-xs transition flex items-center gap-1.5 shadow">
+        <i class="fa-regular fa-share-from-square"></i> 複製行程文字
+      </button>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-stone-900 text-white text-xs px-4 py-2 rounded-xl shadow-xl transition-opacity duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-emerald-400"></i> 行程摘要已成功複製！
+  </div>
+
+  <script>
+    // Tab 切換 Day 1 / Day 2
+    function switchDay(day) {
+      const d1 = document.getElementById('day1-content');
+      const d2 = document.getElementById('day2-content');
+      const t1 = document.getElementById('tab-day1');
+      const t2 = document.getElementById('tab-day2');
+
+      if (day === 1) {
+        d1.classList.remove('hidden');
+        d2.classList.add('hidden');
+        t1.className = "flex-1 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 bg-white text-matsu-700 shadow";
+        t2.className = "flex-1 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-stone-600 hover:text-stone-900";
+      } else {
+        d1.classList.add('hidden');
+        d2.classList.remove('hidden');
+        t2.className = "flex-1 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 bg-white text-matsu-700 shadow";
+        t1.className = "flex-1 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-stone-600 hover:text-stone-900";
+      }
+    }
+
+    // 複製文字摘要至剪貼簿（相容 iframe 規範）
+    function sharePlan() {
+      const summaryText = `【2026 北港祈福漫遊 & 媽祖盃賽事 家庭行程】
+📅 日期：11/20(五) ~ 11/21(六)
+
+🚩 11/20 (週五)
+08:30 基隆出發（中停泰安休息站）
+12:30 抵達北港享用道地小吃午餐
+14:00 飯店 Check-in & 長輩舒服午休
+15:30 朝天宮祈福參拜 + 中山路老街採買麻油特產
+18:00 晚餐時光，21:30 早早休息蓄力
+
+🚩 11/21 (週六)
+清晨【賽事組】06:15 溪畔會場集合鳴槍起跑！
+清晨【長輩組】免早起，睡到自然醒吃早餐悠閒散步
+09:30 全員會合、沖洗換裝退房
+10:45 雲林縣北港文化中心（無障礙冷氣展館看花燈工藝）
+12:15 在地慶功宴
+13:30 國道北上賦歸基隆！`;
+
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = summaryText;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+
+      const toast = document.getElementById('toast');
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2200);
+    }
+  </script>
+</body>
+</html>
