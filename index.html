@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小琉球國慶連假 3天2夜 自由預算與行程看板</title>
+  <title>小琉球智慧排程與自訂預算看板</title>
   <style>
     :root {
       --primary: #0284c7;
@@ -27,12 +27,12 @@
       line-height: 1.5;
     }
 
-    .container { max-width: 1240px; margin: 0 auto; }
+    .container { max-width: 1440px; margin: 0 auto; }
 
     header {
       background: linear-gradient(135deg, #0284c7, #0d9488);
       color: white;
-      padding: 22px;
+      padding: 20px;
       border-radius: var(--radius);
       margin-bottom: 16px;
       text-align: center;
@@ -44,7 +44,7 @@
       justify-content: center;
       gap: 8px;
       flex-wrap: wrap;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     .badge {
       background: rgba(255, 255, 255, 0.22);
@@ -53,7 +53,7 @@
       font-size: 0.8rem;
     }
 
-    /* 預算儀表板 */
+    /* 預算區塊 */
     .budget-section {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -62,142 +62,89 @@
       margin-bottom: 24px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
-    .section-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      margin-bottom: 14px;
+    .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-dark);
     }
 
-    /* 頂部數據看板 */
     .metric-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin-bottom: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
     }
     .metric-card {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 10px;
-      padding: 14px;
+      padding: 12px 14px;
       border-left: 4px solid var(--primary);
     }
     .metric-card.accent { border-left-color: #10b981; background: #f0fdf4; }
     .metric-card.cash { border-left-color: var(--accent); background: #fff7ed; }
-    .metric-label { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
-    .metric-val { font-size: 1.55rem; font-weight: 800; color: var(--text); margin: 4px 0; }
-    .metric-sub { font-size: 0.78rem; color: var(--muted); }
+    .metric-label { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    .metric-val { font-size: 1.45rem; font-weight: 800; color: var(--text); margin: 2px 0; }
+    .metric-sub { font-size: 0.75rem; color: var(--muted); }
 
-    /* 自由輸入網格 (Custom Inputs) */
-    .inputs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      background: #f1f5f9;
-      padding: 16px;
-      border-radius: 10px;
-      margin-bottom: 14px;
-    }
-    .input-box {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .input-box label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #334155;
-      display: flex;
-      justify-content: space-between;
-    }
-    .input-wrapper {
-      display: flex;
-      align-items: center;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      padding: 0 8px;
-    }
-    .input-wrapper span {
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .input-wrapper input {
-      width: 100%;
-      border: none;
-      padding: 8px 6px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #0f172a;
-      outline: none;
-      text-align: right;
-    }
-    .quick-tags {
-      display: flex;
-      gap: 4px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-    .q-tag {
-      background: #e2e8f0;
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      cursor: pointer;
-      color: #475569;
-      border: none;
-    }
-    .q-tag:hover { background: var(--primary-light); color: var(--primary-dark); }
-
-    /* 條形可視化 */
-    .bar-visual-container { margin-top: 8px; }
-    .bar-visual-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .bar-wrapper {
-      display: flex;
-      height: 12px;
-      border-radius: 6px;
-      overflow: hidden;
-      background: #e2e8f0;
-    }
-    .bar-seg { height: 100%; transition: width 0.3s ease; }
-    .seg-fixed { background: #64748b; }
-    .seg-transit { background: #0284c7; }
-    .seg-water { background: #0d9488; }
-    .seg-food { background: #f97316; }
-
-    .legend-row {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-    .legend-item { display: flex; align-items: center; gap: 4px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-
-    /* 看板欄位與積木 */
-    .board {
+    .budget-items-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      background: #f1f5f9;
+      padding: 14px;
+      border-radius: 10px;
+    }
+    .budget-item-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .budget-item-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .budget-name-input {
+      font-weight: 700; font-size: 0.88rem; border: 1px solid transparent; border-radius: 4px; padding: 2px 4px; color: #334155; width: 100%;
+    }
+    .budget-name-input:focus { border-color: var(--primary); background: #f8fafc; outline: none; }
+    .budget-item-bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .budget-val-input { width: 90px; text-align: right; font-weight: 700; font-size: 0.95rem; padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px; }
+    .budget-type-select { font-size: 0.75rem; padding: 4px; border: 1px solid var(--border); border-radius: 4px; background: #f8fafc; }
+    .btn-del-budget { background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px; }
+    .btn-del-budget:hover { color: #ef4444; }
+
+    /* 看板總控制列 */
+    .board-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .board-controls h2 { font-size: 1.15rem; font-weight: 700; color: var(--primary-dark); }
+    .helper-tip { font-size: 0.82rem; color: #0369a1; background: var(--primary-light); padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+
+    /* 看板 Grid (水平滾動) */
+    .board {
+      display: flex;
       gap: 16px;
-      align-items: start;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      align-items: flex-start;
     }
     .column {
+      flex: 0 0 310px;
       background: #e2e8f0;
       border-radius: var(--radius);
       padding: 14px;
@@ -210,27 +157,51 @@
       background: #f8fafc;
       border: 2px dashed #94a3b8;
     }
+
     .col-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
+      gap: 4px;
     }
-    .col-title { font-weight: 700; font-size: 0.98rem; color: #1e293b; }
-    .col-badge {
-      font-size: 0.72rem;
+    .col-title-input {
+      font-weight: 700; font-size: 0.95rem; color: #1e293b; border: 1px solid transparent; border-radius: 4px; padding: 2px 6px; background: transparent; width: 100%;
+    }
+    .col-title-input:focus { background: white; border-color: var(--primary); outline: none; }
+    .btn-del-col { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.9rem; padding: 2px 4px; }
+    .btn-del-col:hover { color: #ef4444; }
+
+    .day-start-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: #475569;
+      background: rgba(255,255,255,0.6);
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .start-time-input {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-weight: 700;
+      color: var(--primary-dark);
       background: white;
-      padding: 2px 8px;
-      border-radius: 12px;
-      color: var(--muted);
-      font-weight: bold;
+      width: 70px;
+      text-align: center;
     }
+
     .card-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
       flex-grow: 1;
     }
+
+    /* 卡片 Block */
     .block {
       background: var(--card-bg);
       border-radius: 8px;
@@ -242,7 +213,7 @@
       transition: transform 0.15s, box-shadow 0.15s;
     }
     .block:active { cursor: grabbing; }
-    .block.dragging { opacity: 0.35; transform: scale(0.98); }
+    .block.dragging { opacity: 0.3; transform: scale(0.98); }
 
     .block[data-type="transit"] { border-left-color: #64748b; }
     .block[data-type="highlight"] { border-left-color: #0284c7; background: #f0f9ff; }
@@ -255,24 +226,30 @@
       align-items: flex-start;
       margin-bottom: 4px;
     }
+    .time-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
     .block-time {
-      font-size: 0.75rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 800;
       background: #f1f5f9;
       padding: 2px 6px;
       border-radius: 4px;
-      color: #475569;
+      color: #334155;
     }
-    .btn-del {
-      background: none;
-      border: none;
-      color: #94a3b8;
-      font-size: 1.1rem;
-      cursor: pointer;
-      line-height: 1;
-      padding: 0 4px;
+    .block-dur {
+      font-size: 0.7rem;
+      color: var(--muted);
     }
-    .btn-del:hover { color: #ef4444; }
+    .block-actions { display: flex; gap: 6px; }
+    .btn-icon {
+      background: none; border: none; color: #94a3b8; font-size: 0.9rem; cursor: pointer; line-height: 1; padding: 0 2px;
+    }
+    .btn-icon:hover { color: #ef4444; }
+    .btn-icon.edit-icon:hover { color: var(--primary); }
+
     .block-title { font-weight: 600; font-size: 0.92rem; margin-bottom: 4px; color: var(--text); }
     .block-desc { font-size: 0.8rem; color: var(--muted); }
 
@@ -287,11 +264,22 @@
       font-weight: 600;
       cursor: pointer;
       text-align: center;
-      transition: background 0.2s;
     }
     .add-block-btn:hover { background: var(--primary-light); }
 
-    /* Modal */
+    .btn-main {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-main:hover { background: var(--primary-dark); }
+
+    /* Modal 表單 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -306,58 +294,24 @@
       background: white;
       border-radius: var(--radius);
       padding: 20px;
-      max-width: 400px;
+      max-width: 420px;
       width: 100%;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
     .modal h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--primary); }
     .form-group { margin-bottom: 12px; }
-    .form-group label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #334155;
-    }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #334155; }
     .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.88rem;
+      width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.88rem;
     }
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 16px;
-    }
-    .btn {
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      border: none;
-    }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-secondary { background: #e2e8f0; color: #475569; }
-    .btn-reset {
-      background: #f1f5f9;
-      color: #475569;
-      border: 1px solid var(--border);
-      font-size: 0.78rem;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .btn-reset:hover { background: #e2e8f0; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1>小琉球 3天2夜 自由預算與行程看板</h1>
+    <h1>小琉球 3天2夜 智慧順延看板與預算工具</h1>
     <div class="badge-bar">
       <span class="badge">📅 2026/10/09 - 10/11</span>
       <span class="badge">🏠 裡裡家 Lily Coliving (三民路)</span>
@@ -365,454 +319,535 @@
     </div>
   </header>
 
-  <!-- 💡 自由輸入預算區域 -->
+  <!-- 1. 自由預算區域 -->
   <section class="budget-section">
-    <div class="section-title">
-      <span>📊 即時動態開銷試算（可直接手動修改金額）</span>
-      <button class="btn-reset" onclick="resetToDefault()">↺ 恢復預設推薦值</button>
+    <div class="section-header">
+      <div class="section-title">📊 預算支出清單（項目可自由增減、改名與輸入金額）</div>
+      <button class="btn-main" onclick="addNewBudgetItem()">+ 新增支出項目</button>
     </div>
-    
-    <!-- 總額數據面板 -->
+
     <div class="metric-grid">
       <div class="metric-card">
-        <div class="metric-label">目前每人總預算 (每人分攤)</div>
-        <div class="metric-val" id="totalPerPerson">NT$ 9,054</div>
-        <div class="metric-sub">固定支出：<strong id="fixedSubtotal">$6,104</strong> /人</div>
+        <div class="metric-label">每人總預算 (每人分攤)</div>
+        <div class="metric-val" id="totalPerPerson">NT$ 0</div>
+        <div class="metric-sub">各分攤項目即時加總</div>
       </div>
       <div class="metric-card accent">
         <div class="metric-label">雙人全包總花費 (2人合計)</div>
-        <div class="metric-val" id="totalGroup">NT$ 18,108</div>
-        <div class="metric-sub">全部項目之兩人總和</div>
+        <div class="metric-val" id="totalGroup">NT$ 0</div>
+        <div class="metric-sub">兩人旅行總花費池</div>
       </div>
       <div class="metric-card cash">
         <div class="metric-label">建議出發備足現金 (雙人總和)</div>
         <div class="metric-val" id="cashEstimate">NT$ 8,000 - 10,000</div>
-        <div class="metric-sub">住宿尾款、小吃、車資浮潛多收現金</div>
+        <div class="metric-sub">住宿尾款、機車船票、小吃浮潛</div>
       </div>
     </div>
 
-    <!-- 自由金額輸入表單 -->
-    <div class="inputs-grid">
-      <!-- 1. 高鐵 -->
-      <div class="input-box">
-        <label>台北 ⇄ 左營 高鐵 (每人)</label>
-        <div class="input-wrapper">
-          <span>NT$</span>
-          <input type="number" id="inpHsr" value="2980" oninput="calculateCustomBudget()">
-        </div>
-        <div class="quick-tags">
-          <button class="q-tag" onclick="setVal('inpHsr', 2980)">全票 $2,980</button>
-          <button class="q-tag" onclick="setVal('inpHsr', 2380)">8折早鳥 $2,380</button>
-        </div>
-      </div>
-
-      <!-- 2. 住宿 -->
-      <div class="input-box">
-        <label>裡裡家住宿 2晚 (每人)</label>
-        <div class="input-wrapper">
-          <span>NT$</span>
-          <input type="number" id="inpHotel" value="2304" oninput="calculateCustomBudget()">
-        </div>
-        <div class="quick-tags">
-          <button class="q-tag" onclick="setVal('inpHotel', 2304)">已訂單人房 $2,304</button>
-        </div>
-      </div>
-
-      <!-- 3. 來回船票 -->
-      <div class="input-box">
-        <label>東港來回船票 (每人)</label>
-        <div class="input-wrapper">
-          <span>NT$</span>
-          <input type="number" id="inpBoat" value="420" oninput="calculateCustomBudget()">
-        </div>
-        <div class="quick-tags">
-          <button class="q-tag" onclick="setVal('inpBoat', 420)">民宿代訂 $420</button>
-        </div>
-      </div>
-
-      <!-- 4. 機車 -->
-      <div class="input-box">
-        <label>機車 48hr (每人分攤)</label>
-        <div class="input-wrapper">
-          <span>NT$</span>
-          <input type="number" id="inpMoto" value="400" oninput="calculateCustomBudget()">
-        </div>
-        <div class="quick-tags">
-          <button class="q-tag" onclick="setVal('inpMoto', 400)">合騎1台 $400</button>
-          <button class="q-tag" onclick="setVal('inpMoto', 800)">一人1台 $800</button>
-        </div>
-      </div>
-
-      <!-- 5. 左營接駁 -->
-      <div class="input-box">
-        <label>左營 ⇄ 東港接駁 (每人)</label>
-        <div class="input-wrapper">
-          <span>NT$</span>
-          <input type="number" id="inpTransit" value="450" oninput="calculateCustomBudget()">
-        </div>
-        <div class="quick-tags">
-          <button class="q-tag" onclick="setVal('inpTransit', 450)">九人拼車 $450</button>
-          <button class="q-tag" onclick="setVal('inpTransit', 250)">好行公車 $250</button>
-        </div>
-      </div>
-
-      <!-- 6. 水上活動 -->
-      <div class="input-box">
-        <label>水上活動 (每人)</label>
-        <div class="input-wrapper">
-          <span>NT$</span>
-          <input type="number" id="inpWater" value="450" oninput="calculateCustomBudget()">
-        </div>
-        <div class="quick-tags">
-          <button class="q-tag" onclick="setVal('inpWater', 450)">熊潛水浮潛 $450</button>
-          <button class="q-tag" onclick="setVal('inpWater', 1250)">SUP立槳 $1,250</button>
-          <button class="q-tag" onclick="setVal('inpWater', 0)">不下水 $0</button>
-        </div>
-      </div>
-
-      <!-- 7. BBQ與三餐饮食 -->
-      <div class="input-box">
-        <label>3天伙食與BBQ (每人)</label>
-        <div class="input-wrapper">
-          <span>NT$</span>
-          <input type="number" id="inpFood" value="1650" oninput="calculateCustomBudget()">
-        </div>
-        <div class="quick-tags">
-          <button class="q-tag" onclick="setVal('inpFood', 1650)">小吃+烤肉 $1,650</button>
-          <button class="q-tag" onclick="setVal('inpFood', 2200)">吃好一點 $2,200</button>
-        </div>
-      </div>
-
-      <!-- 8. 伴手禮與雜支 -->
-      <div class="input-box">
-        <label>麻花捲與雜支 (每人)</label>
-        <div class="input-wrapper">
-          <span>NT$</span>
-          <input type="number" id="inpMisc" value="400" oninput="calculateCustomBudget()">
-        </div>
-        <div class="quick-tags">
-          <button class="q-tag" onclick="setVal('inpMisc', 400)">基本伴手 $400</button>
-          <button class="q-tag" onclick="setVal('inpMisc', 800)">送禮買滿 $800</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 視覺化比例條形圖 -->
-    <div class="bar-visual-container">
-      <div class="bar-visual-label">
-        <span>開銷佔比分析</span>
-        <span id="ratioText">計算中...</span>
-      </div>
-      <div class="bar-wrapper">
-        <div class="bar-seg seg-fixed" id="barFixed" style="width: 67%;"></div>
-        <div class="bar-seg seg-transit" id="barTransit" style="width: 5%;"></div>
-        <div class="bar-seg seg-water" id="barWater" style="width: 5%;"></div>
-        <div class="bar-seg seg-food" id="barFood" style="width: 23%;"></div>
-      </div>
-      <div class="legend-row">
-        <div class="legend-item"><span class="dot seg-fixed"></span> 大交通與住宿 (高鐵/房間/船票/機車)</div>
-        <div class="legend-item"><span class="dot seg-transit"></span> 左營東港接駁</div>
-        <div class="legend-item"><span class="dot seg-water"></span> 水上體驗</div>
-        <div class="legend-item"><span class="dot seg-food"></span> 伙食、伴手禮與雜支</div>
-      </div>
-    </div>
+    <div class="budget-items-container" id="budgetContainer"></div>
   </section>
 
-  <!-- 行程拖曳看板 -->
-  <div class="board">
-    
+  <!-- 2. 智慧行程看板 -->
+  <div class="board-controls">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <h2>📋 智慧排程看板</h2>
+      <span class="helper-tip">✨ 拖移卡片後，時間將自動順延對齊！點擊 ✏️ 可改時長</span>
+    </div>
+    <button class="btn-main" onclick="addNewColumn()">+ 新增天數 / 欄位</button>
+  </div>
+
+  <div class="board" id="boardContainer">
+
     <!-- Day 1 -->
-    <div class="column" data-day="day1">
+    <div class="column" data-type="timeline">
       <div class="col-header">
-        <span class="col-title">Day 1：10/9 (五) 登島夕陽</span>
-        <span class="col-badge">Day 1</span>
+        <input type="text" class="col-title-input" value="Day 1：10/9 (五) 抵達與夕陽">
+        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
+      </div>
+      <div class="day-start-row">
+        <span>⏰ 當日出發首發時間：</span>
+        <input type="text" class="start-time-input" value="07:30" onchange="rippleColumnTimes(this.closest('.column'))">
       </div>
       <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+        
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="transit" data-duration="125">
           <div class="block-header">
-            <span class="block-time">07:30 - 09:35</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">07:30 - 09:35</span>
+              <span class="block-dur">(125分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
-          <div class="block-title">搭乘高鐵往左營</div>
-          <div class="block-desc">台北車站出發，約 09:35 抵達左營站。</div>
+          <div class="block-title">台北搭高鐵往左營</div>
+          <div class="block-desc">高鐵直奔左營站。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="transit" data-duration="100">
           <div class="block-header">
-            <span class="block-time">09:50 - 11:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">09:35 - 11:15</span>
+              <span class="block-dur">(100分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">接駁車至東港 ➔ 搭船登島</div>
-          <div class="block-desc">接駁直達碼頭，取票搭船。</div>
+          <div class="block-desc">九人座接駁約 50 分鐘，取票搭船登島。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="120">
           <div class="block-header">
-            <span class="block-time">12:00 - 14:00</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">11:15 - 13:15</span>
+              <span class="block-dur">(120分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">牽機車 ➔ 裡裡家放行李 ➔ 午餐</div>
-          <div class="block-desc">先到三民路放行李，吃相思麵/起司餅。</div>
+          <div class="block-desc">三民路放行李，附近吃相思麵/起司餅。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="120">
           <div class="block-header">
-            <span class="block-time">17:00 - 18:00</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">13:15 - 15:15</span>
+              <span class="block-dur">(120分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
-          <div class="block-title">落日亭看夕陽</div>
-          <div class="block-desc">小琉球最經典夕陽據點。</div>
+          <div class="block-title">落日亭 ＆ 美人洞望海亭吹風</div>
+          <div class="block-desc">環島初體驗，欣賞海景。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="food" data-duration="120">
           <div class="block-header">
-            <span class="block-time">18:30 - 20:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">15:15 - 17:15</span>
+              <span class="block-dur">(120分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">海鮮碳烤 BBQ 吃到飽</div>
-          <div class="block-desc">大啖生蚵與烤肉，享受晚風。</div>
+          <div class="block-desc">大啖鮮蚵烤肉，享受島嶼晚風。</div>
         </div>
+
       </div>
-      <button class="add-block-btn" onclick="openModal(this)">+ 新增活動積木</button>
+      <button class="add-block-btn" onclick="openAddModal(this)">+ 新增活動積木</button>
     </div>
 
     <!-- Day 2 -->
-    <div class="column" data-day="day2">
+    <div class="column" data-type="timeline">
       <div class="col-header">
-        <span class="col-title">Day 2：10/10 (六) 浮潛看海龜</span>
-        <span class="col-badge">Day 2</span>
+        <input type="text" class="col-title-input" value="Day 2：10/10 (六) 浮潛看海龜">
+        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
+      </div>
+      <div class="day-start-row">
+        <span>⏰ 當日出發首發時間：</span>
+        <input type="text" class="start-time-input" value="08:30" onchange="rippleColumnTimes(this.closest('.column'))">
       </div>
       <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
+        
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="food" data-duration="60">
           <div class="block-header">
-            <span class="block-time">08:30 - 09:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">08:30 - 09:30</span>
+              <span class="block-dur">(60分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">洪媽媽早餐店</div>
-          <div class="block-desc">品嚐在地琉球粿與特色早餐。</div>
+          <div class="block-desc">琉球粿、特色早餐。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="highlight">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="highlight" data-duration="120">
           <div class="block-header">
-            <span class="block-time">10:00 - 12:00 ⭐</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">09:30 - 11:30 ⭐</span>
+              <span class="block-dur">(120分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">熊潛水浮潛看海龜 (加贈照片)</div>
-          <div class="block-desc">美人洞/花瓶岩/龍蝦洞，近距離與海龜合照！</div>
+          <div class="block-desc">近距離與野生海龜共游拍照！</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="90">
           <div class="block-header">
-            <span class="block-time">12:30 - 14:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">11:30 - 13:00</span>
+              <span class="block-dur">(90分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">回民宿沖澡 ➔ 午餐避暑</div>
-          <div class="block-desc">私人衛浴沖洗更衣，吹冷氣吃芒果冰。</div>
+          <div class="block-desc">房間私人衛浴沖洗更衣，吹冷氣吃芒果冰。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="150">
           <div class="block-header">
-            <span class="block-time">15:00 - 17:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">13:00 - 15:30</span>
+              <span class="block-dur">(150分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">蛤板灣貝殼沙灘 ＆ 烏鬼洞</div>
-          <div class="block-desc">威尼斯沙灘踏浪，漫步珊瑚礁迷宮步道。</div>
+          <div class="block-desc">威尼斯沙灘踏浪，漫步珊瑚礁步道。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
-          <div class="block-header">
-            <span class="block-time">18:30 - 20:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
-          </div>
-          <div class="block-title">海鮮熱炒 / 餐酒館小酌</div>
-          <div class="block-desc">吃新鮮海產，回程順路買麻花捲。</div>
-        </div>
+
       </div>
-      <button class="add-block-btn" onclick="openModal(this)">+ 新增活動積木</button>
+      <button class="add-block-btn" onclick="openAddModal(this)">+ 新增活動積木</button>
     </div>
 
     <!-- Day 3 -->
-    <div class="column" data-day="day3">
+    <div class="column" data-type="timeline">
       <div class="col-header">
-        <span class="col-title">Day 3：10/11 (日) 秘境與北返</span>
-        <span class="col-badge">Day 3</span>
+        <input type="text" class="col-title-input" value="Day 3：10/11 (日) 秘境與北返">
+        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
+      </div>
+      <div class="day-start-row">
+        <span>⏰ 當日出發首發時間：</span>
+        <input type="text" class="start-time-input" value="09:00" onchange="rippleColumnTimes(this.closest('.column'))">
       </div>
       <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+        
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="90">
           <div class="block-header">
-            <span class="block-time">09:00 - 10:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">09:00 - 10:30</span>
+              <span class="block-dur">(90分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">百年老榕樹 ＆ 厚石秘境</div>
           <div class="block-desc">俯瞰厚石魚澳，拍攝無死角海景。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="transit" data-duration="45">
           <div class="block-header">
-            <span class="block-time">11:00 - 11:45</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">10:30 - 11:15</span>
+              <span class="block-dur">(45分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">裡裡家退房 ➔ 還機車</div>
-          <div class="block-desc">整理行李退房，前往碼頭交車。</div>
+          <div class="block-desc">整理行李退房，碼頭交車。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="transit" data-duration="45">
           <div class="block-header">
-            <span class="block-time">11:45 - 12:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">11:15 - 12:00</span>
+              <span class="block-dur">(45分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">搭船回東港（避開排隊潮）</div>
-          <div class="block-desc">搭乘中午船班，免去下午排隊苦等。</div>
+          <div class="block-desc">中午船班人潮適中，免去下午排隊苦等。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="food" data-duration="90">
           <div class="block-header">
-            <span class="block-time">12:30 - 14:00</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">12:00 - 13:30</span>
+              <span class="block-dur">(90分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">東港華僑市場海鮮午餐</div>
           <div class="block-desc">大吃黑鮪魚生魚片與旗魚黑輪。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
-          <div class="block-header">
-            <span class="block-time">14:30 - 17:30</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
-          </div>
-          <div class="block-title">接駁回左營 ➔ 高鐵回台北</div>
-          <div class="block-desc">搭高鐵返回台北，傍晚舒適到家。</div>
-        </div>
+
       </div>
-      <button class="add-block-btn" onclick="openModal(this)">+ 新增活動積木</button>
+      <button class="add-block-btn" onclick="openAddModal(this)">+ 新增活動積木</button>
     </div>
 
-    <!-- 候補/備用活動池 -->
-    <div class="column pool-col" data-day="pool">
+    <!-- 備用候選池 -->
+    <div class="column pool-col" data-type="pool">
       <div class="col-header">
-        <span class="col-title">📦 靈活替換池 (備用選項)</span>
-        <span class="col-badge">候選</span>
+        <input type="text" class="col-title-input" value="📦 備用候選活動池">
+        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
+      </div>
+      <div class="day-start-row" style="opacity: 0.6;">
+        <span>ℹ️ 拖入日程將自動排定時間</span>
       </div>
       <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+        
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="90">
           <div class="block-header">
-            <span class="block-time">夜間</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">彈性待排</span>
+              <span class="block-dur">(90分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">厚石裙礁吹海風觀星</div>
           <div class="block-desc">無光害海灘，晚上抬頭看星空。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="highlight">
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="highlight" data-duration="120">
           <div class="block-header">
-            <span class="block-time">下午日落</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
+            <div class="time-wrapper">
+              <span class="block-time">彈性待排</span>
+              <span class="block-dur">(120分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+              <button class="btn-icon" onclick="delBlock(this)">×</button>
+            </div>
           </div>
           <div class="block-title">SUP 立式划槳日落團</div>
           <div class="block-desc">改划槳看夕陽時可拉過去替換。</div>
         </div>
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
-          <div class="block-header">
-            <span class="block-time">午茶點心</span>
-            <button class="btn-del" onclick="delBlock(this)">×</button>
-          </div>
-          <div class="block-title">海龜燒＋手搖飲放空</div>
-          <div class="block-desc">外帶點心在港口看海。</div>
-        </div>
+
       </div>
-      <button class="add-block-btn" onclick="openModal(this)">+ 新增備用活動</button>
+      <button class="add-block-btn" onclick="openAddModal(this)">+ 新增活動積木</button>
     </div>
 
   </div>
 </div>
 
-<!-- 新增積木 Modal -->
-<div class="modal-overlay" id="modalOverlay">
+<!-- 新增/編輯積木 Modal -->
+<div class="modal-overlay" id="blockModal">
   <div class="modal">
-    <h3>新增自訂行程積木</h3>
+    <h3 id="modalHead">編輯行程積木</h3>
     <div class="form-group">
       <label>活動名稱 *</label>
-      <input type="text" id="modalTitle" placeholder="例如：咖啡廳放空、買伴手禮">
+      <input type="text" id="modalTitle" placeholder="活動名稱">
     </div>
     <div class="form-group">
-      <label>時間區間</label>
-      <input type="text" id="modalTime" placeholder="例如：14:00 - 15:30 或 彈性">
+      <label>活動預計耗時（分鐘）*</label>
+      <input type="number" id="modalDuration" value="90" min="15" step="15">
+      <small style="color:var(--muted); font-size:0.75rem;">系統將自動以前一個活動結束時間 ＋ 本時長推算！</small>
     </div>
     <div class="form-group">
-      <label>活動類型（顏色邊線）</label>
+      <label>類型顏色</label>
       <select id="modalType">
         <option value="leisure">觀光放空（綠色）</option>
-        <option value="food">美食與聚餐（橘色）</option>
-        <option value="highlight">亮點體驗/水上活動（藍色）</option>
+        <option value="food">美食餐飲（橘色）</option>
+        <option value="highlight">核心體驗/浮潛（藍色）</option>
         <option value="transit">交通移動（灰色）</option>
       </select>
     </div>
     <div class="form-group">
       <label>備註說明</label>
-      <textarea id="modalDesc" rows="2" placeholder="填寫地點、備註或提醒事項..."></textarea>
+      <textarea id="modalDesc" rows="2" placeholder="詳細備註..."></textarea>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
-      <button class="btn btn-primary" onclick="confirmAddBlock()">加入看板</button>
+      <button class="btn-icon" style="color:var(--muted); font-size:0.85rem;" onclick="closeModal()">取消</button>
+      <button class="btn-main" onclick="saveBlock()">儲存</button>
     </div>
   </div>
 </div>
 
 <script>
-  // 自由輸入即時動態計算
-  function calculateCustomBudget() {
-    const hsr = parseInt(document.getElementById('inpHsr').value) || 0;
-    const hotel = parseInt(document.getElementById('inpHotel').value) || 0;
-    const boat = parseInt(document.getElementById('inpBoat').value) || 0;
-    const moto = parseInt(document.getElementById('inpMoto').value) || 0;
-    
-    const transit = parseInt(document.getElementById('inpTransit').value) || 0;
-    const water = parseInt(document.getElementById('inpWater').value) || 0;
-    const food = parseInt(document.getElementById('inpFood').value) || 0;
-    const misc = parseInt(document.getElementById('inpMisc').value) || 0;
+  /* ===================== 1. 預算動態管理 ===================== */
+  const defaultBudget = [
+    { name: "台北 ⇄ 左營 高鐵來回", amount: 2980, type: "per" },
+    { name: "裡裡家單人房 2晚 (已訂含稅)", amount: 2304, type: "per" },
+    { name: "東港來回船票 (民宿代訂)", amount: 420, type: "per" },
+    { name: "機車 48hr (兩人一部)", amount: 800, type: "total" },
+    { name: "左營 ⇄ 東港九人座接駁", amount: 450, type: "per" },
+    { name: "熊潛水浮潛看海龜", amount: 450, type: "per" },
+    { name: "3天伙食與海鮮BBQ", amount: 1650, type: "per" },
+    { name: "伴手禮麻花捲與雜支", amount: 400, type: "per" }
+  ];
 
-    const fixed = hsr + hotel + boat + moto;
-    const foodAndMisc = food + misc;
-    const total = fixed + transit + water + foodAndMisc;
-    const groupTotal = total * 2;
+  function renderBudgetItems() {
+    const container = document.getElementById('budgetContainer');
+    container.innerHTML = '';
+    defaultBudget.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'budget-item-card';
+      card.innerHTML = `
+        <div class="budget-item-top">
+          <input type="text" class="budget-name-input" value="${item.name}" oninput="defaultBudget[${index}].name = this.value">
+          <button class="btn-del-budget" onclick="deleteBudgetItem(${index})" title="刪除此項">×</button>
+        </div>
+        <div class="budget-item-bottom">
+          <select class="budget-type-select" onchange="defaultBudget[${index}].type = this.value; calcBudget();">
+            <option value="per" ${item.type === 'per' ? 'selected' : ''}>每人分攤</option>
+            <option value="total" ${item.type === 'total' ? 'selected' : ''}>雙人總額</option>
+          </select>
+          <div>
+            <span style="font-size:0.8rem; color:var(--muted)">NT$</span>
+            <input type="number" class="budget-val-input" value="${item.amount}" oninput="defaultBudget[${index}].amount = parseInt(this.value) || 0; calcBudget();">
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+    calcBudget();
+  }
 
-    document.getElementById('fixedSubtotal').innerText = '$' + fixed.toLocaleString();
-    document.getElementById('totalPerPerson').innerText = 'NT$ ' + total.toLocaleString();
-    document.getElementById('totalGroup').innerText = 'NT$ ' + groupTotal.toLocaleString();
+  function calcBudget() {
+    let perPersonSum = 0;
+    let groupSum = 0;
+    defaultBudget.forEach(item => {
+      if (item.type === 'per') {
+        perPersonSum += item.amount;
+        groupSum += item.amount * 2;
+      } else {
+        perPersonSum += Math.round(item.amount / 2);
+        groupSum += item.amount;
+      }
+    });
+    document.getElementById('totalPerPerson').innerText = 'NT$ ' + perPersonSum.toLocaleString();
+    document.getElementById('totalGroup').innerText = 'NT$ ' + groupSum.toLocaleString();
+  }
 
-    // 更新長條圖與佔比
-    if (total > 0) {
-      const pFixed = Math.round((fixed / total) * 100);
-      const pTransit = Math.round((transit / total) * 100);
-      const pWater = Math.round((water / total) * 100);
-      const pFood = 100 - pFixed - pTransit - pWater;
+  function addNewBudgetItem() {
+    defaultBudget.push({ name: "新支出項目", amount: 500, type: "per" });
+    renderBudgetItems();
+  }
 
-      document.getElementById('barFixed').style.width = pFixed + '%';
-      document.getElementById('barTransit').style.width = pTransit + '%';
-      document.getElementById('barWater').style.width = pWater + '%';
-      document.getElementById('barFood').style.width = pFood + '%';
+  function deleteBudgetItem(index) {
+    defaultBudget.splice(index, 1);
+    renderBudgetItems();
+  }
 
-      document.getElementById('ratioText').innerText = 
-        `固定大項目 ${pFixed}% ｜ 接駁 ${pTransit}% ｜ 水上活動 ${pWater}% ｜ 飲食雜支 ${pFood}%`;
+  /* ===================== 2. 智慧順延時間對齊引擎 (Auto Ripple) ===================== */
+  function parseTimeToMinutes(timeStr) {
+    const parts = timeStr.trim().split(':');
+    if (parts.length < 2) return 8 * 60; // 預設 08:00
+    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  }
+
+  function formatMinutesToTime(mins) {
+    const h = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+
+  // 自動為某一欄的所有卡片連鎖重整時間
+  function rippleColumnTimes(column) {
+    if (!column || column.getAttribute('data-type') === 'pool') return;
+
+    const startInput = column.querySelector('.start-time-input');
+    let currentMins = parseTimeToMinutes(startInput ? startInput.value : "08:30");
+
+    const blocks = column.querySelectorAll('.card-list .block');
+    blocks.forEach(block => {
+      const duration = parseInt(block.getAttribute('data-duration')) || 60;
+      const startStr = formatMinutesToTime(currentMins);
+      const endMins = currentMins + duration;
+      const endStr = formatMinutesToTime(endMins);
+
+      // 更新時間顯示
+      const timeSpan = block.querySelector('.block-time');
+      const isStar = timeSpan.innerText.includes('⭐') ? ' ⭐' : '';
+      timeSpan.innerText = `${startStr} - ${endStr}${isStar}`;
+      
+      const durSpan = block.querySelector('.block-dur');
+      if (durSpan) durSpan.innerText = `(${duration}分)`;
+
+      currentMins = endMins; // 骨牌推到下一個
+    });
+  }
+
+  /* ===================== 3. 欄位管理 ===================== */
+  function addNewColumn() {
+    const colName = prompt("請輸入新欄位名稱（如：Day 4、雨天備案）：", "新日程 / 備案");
+    if (!colName) return;
+
+    const board = document.getElementById('boardContainer');
+    const col = document.createElement('div');
+    col.className = 'column';
+    col.setAttribute('data-type', 'timeline');
+    col.innerHTML = `
+      <div class="col-header">
+        <input type="text" class="col-title-input" value="${colName}">
+        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
+      </div>
+      <div class="day-start-row">
+        <span>⏰ 當日出發首發時間：</span>
+        <input type="text" class="start-time-input" value="09:00" onchange="rippleColumnTimes(this.closest('.column'))">
+      </div>
+      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)"></div>
+      <button class="add-block-btn" onclick="openAddModal(this)">+ 新增活動積木</button>
+    `;
+    board.appendChild(col);
+  }
+
+  function deleteColumn(btn) {
+    if (confirm("確定要刪除整個欄位與其中的所有活動卡片嗎？")) {
+      btn.closest('.column').remove();
     }
   }
 
-  function setVal(id, val) {
-    document.getElementById(id).value = val;
-    calculateCustomBudget();
-  }
-
-  function resetToDefault() {
-    document.getElementById('inpHsr').value = 2980;
-    document.getElementById('inpHotel').value = 2304;
-    document.getElementById('inpBoat').value = 420;
-    document.getElementById('inpMoto').value = 400;
-    document.getElementById('inpTransit').value = 450;
-    document.getElementById('inpWater').value = 450;
-    document.getElementById('inpFood').value = 1650;
-    document.getElementById('inpMisc').value = 400;
-    calculateCustomBudget();
-  }
-
-  // 拖曳邏輯
+  /* ===================== 4. 積木拖曳與編輯 ===================== */
   let draggedCard = null;
-  let targetList = null;
+  let sourceColumn = null;
+  let currentEditingBlock = null;
+  let targetListForAdd = null;
 
   function onDragStart(e) {
     draggedCard = e.currentTarget;
+    sourceColumn = draggedCard.closest('.column');
     e.currentTarget.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
   }
 
   function onDragEnd(e) {
     e.currentTarget.classList.remove('dragging');
+    const targetColumn = draggedCard.closest('.column');
+
+    // 拖曳結束後：分別重新連鎖對齊來源欄位與目標欄位！
+    if (sourceColumn) rippleColumnTimes(sourceColumn);
+    if (targetColumn && targetColumn !== sourceColumn) {
+      if (targetColumn.getAttribute('data-type') === 'pool') {
+        // 如果被拖到候選池，標記為待排
+        const timeSpan = draggedCard.querySelector('.block-time');
+        timeSpan.innerText = '彈性待排';
+      } else {
+        rippleColumnTimes(targetColumn);
+      }
+    }
+
     draggedCard = null;
+    sourceColumn = null;
   }
 
   function onDragOver(e) {
@@ -842,56 +877,88 @@
   }
 
   function delBlock(btn) {
+    const col = btn.closest('.column');
     if (confirm("確定要刪除這張活動卡片嗎？")) {
       btn.closest('.block').remove();
+      rippleColumnTimes(col);
     }
   }
 
-  function openModal(btn) {
-    targetList = btn.previousElementSibling;
+  function openAddModal(btn) {
+    currentEditingBlock = null;
+    targetListForAdd = btn.previousElementSibling;
+    document.getElementById('modalHead').innerText = '新增活動積木';
     document.getElementById('modalTitle').value = '';
-    document.getElementById('modalTime').value = '彈性';
+    document.getElementById('modalDuration').value = 90;
     document.getElementById('modalDesc').value = '';
-    document.getElementById('modalOverlay').style.display = 'flex';
+    document.getElementById('modalType').value = 'leisure';
+    document.getElementById('blockModal').style.display = 'flex';
+  }
+
+  function editBlock(block) {
+    currentEditingBlock = block;
+    targetListForAdd = null;
+    document.getElementById('modalHead').innerText = '編輯活動積木';
+    document.getElementById('modalTitle').value = block.querySelector('.block-title').innerText;
+    document.getElementById('modalDuration').value = block.getAttribute('data-duration') || 90;
+    document.getElementById('modalDesc').value = block.querySelector('.block-desc').innerText;
+    document.getElementById('modalType').value = block.getAttribute('data-type') || 'leisure';
+    document.getElementById('blockModal').style.display = 'flex';
   }
 
   function closeModal() {
-    document.getElementById('modalOverlay').style.display = 'none';
-    targetList = null;
+    document.getElementById('blockModal').style.display = 'none';
+    currentEditingBlock = null;
+    targetListForAdd = null;
   }
 
-  function confirmAddBlock() {
+  function saveBlock() {
     const title = document.getElementById('modalTitle').value.trim();
-    if (!title) {
-      alert("請輸入活動名稱！");
-      return;
-    }
-    const time = document.getElementById('modalTime').value.trim() || "彈性";
+    if (!title) { alert("請輸入活動名稱！"); return; }
+    const duration = parseInt(document.getElementById('modalDuration').value) || 60;
     const type = document.getElementById('modalType').value;
     const desc = document.getElementById('modalDesc').value.trim();
 
-    const block = document.createElement('div');
-    block.className = 'block';
-    block.draggable = true;
-    block.setAttribute('data-type', type);
-    block.ondragstart = onDragStart;
-    block.ondragend = onDragEnd;
-    block.innerHTML = `
-      <div class="block-header">
-        <span class="block-time">${time}</span>
-        <button class="btn-del" onclick="delBlock(this)">×</button>
-      </div>
-      <div class="block-title">${title}</div>
-      <div class="block-desc">${desc}</div>
-    `;
-
-    if (targetList) {
-      targetList.appendChild(block);
+    if (currentEditingBlock) {
+      currentEditingBlock.setAttribute('data-type', type);
+      currentEditingBlock.setAttribute('data-duration', duration);
+      currentEditingBlock.querySelector('.block-title').innerText = title;
+      currentEditingBlock.querySelector('.block-desc').innerText = desc;
+      rippleColumnTimes(currentEditingBlock.closest('.column'));
+    } else if (targetListForAdd) {
+      const block = document.createElement('div');
+      block.className = 'block';
+      block.draggable = true;
+      block.setAttribute('data-type', type);
+      block.setAttribute('data-duration', duration);
+      block.ondragstart = onDragStart;
+      block.ondragend = onDragEnd;
+      block.ondblclick = function() { editBlock(this); };
+      block.innerHTML = `
+        <div class="block-header">
+          <div class="time-wrapper">
+            <span class="block-time">待排</span>
+            <span class="block-dur">(${duration}分)</span>
+          </div>
+          <div class="block-actions">
+            <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
+            <button class="btn-icon" onclick="delBlock(this)">×</button>
+          </div>
+        </div>
+        <div class="block-title">${title}</div>
+        <div class="block-desc">${desc}</div>
+      `;
+      targetListForAdd.appendChild(block);
+      rippleColumnTimes(targetListForAdd.closest('.column'));
     }
     closeModal();
   }
 
-  window.onload = calculateCustomBudget;
+  window.onload = function() {
+    renderBudgetItems();
+    // 初始化所有日程時間對齊
+    document.querySelectorAll('.column[data-type="timeline"]').forEach(col => rippleColumnTimes(col));
+  };
 </script>
 
 </body>
