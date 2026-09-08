@@ -32,7 +32,7 @@
       line-height: 1.5;
     }
 
-    .container { max-width: 1560px; margin: 0 auto; }
+    .container { max-width: 1580px; margin: 0 auto; }
 
     header {
       background: linear-gradient(135deg, #0284c7, #0d9488);
@@ -127,21 +127,20 @@
     .budget-item-bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
     .budget-val-input { width: 90px; text-align: right; font-weight: 700; font-size: 0.95rem; padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px; }
     .budget-type-select { font-size: 0.75rem; padding: 4px; border: 1px solid var(--border); border-radius: 4px; background: #f8fafc; }
-    .btn-del-budget { background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px; }
+    .btn-del-budget { background: none; border: none; color: #94a3b8; font-size: 1.15rem; cursor: pointer; padding: 2px; line-height: 1; }
     .btn-del-budget:hover { color: #ef4444; }
 
-    /* 主架構佈局 */
+    /* 主工作區：左看板 + 右固定側邊欄 */
     .main-workspace {
       display: grid;
-      grid-template-columns: 1fr 330px;
+      grid-template-columns: minmax(0, 1fr) 340px;
       gap: 20px;
       align-items: start;
     }
-    @media (max-width: 1024px) {
+    @media (max-width: 1080px) {
       .main-workspace { grid-template-columns: 1fr; }
     }
 
-    /* 看板總控制列 */
     .board-controls {
       display: flex;
       justify-content: space-between;
@@ -158,7 +157,7 @@
       display: flex;
       gap: 16px;
       overflow-x: auto;
-      padding-bottom: 12px;
+      padding-bottom: 16px;
       align-items: flex-start;
     }
     
@@ -168,7 +167,7 @@
       padding: 14px;
       display: flex;
       flex-direction: column;
-      min-height: 540px;
+      min-height: 560px;
       transition: opacity 0.2s, transform 0.2s;
     }
     .column.dragging-col { opacity: 0.35; transform: scale(0.97); }
@@ -195,7 +194,7 @@
       font-weight: 700; font-size: 0.95rem; color: #1e293b; border: 1px solid transparent; border-radius: 4px; padding: 2px 6px; background: transparent; width: 100%;
     }
     .col-title-input:focus { background: white; border-color: var(--primary); outline: none; }
-    .btn-del-col { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.9rem; padding: 2px 4px; }
+    .btn-del-col { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.15rem; padding: 0 4px; line-height: 1; }
     .btn-del-col:hover { color: #ef4444; }
 
     .day-start-row {
@@ -309,7 +308,7 @@
     .type-switcher[data-type="transit"] { background: #64748b; }
 
     .btn-icon {
-      background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; line-height: 1; padding: 0 2px;
+      background: none; border: none; color: #94a3b8; font-size: 1.15rem; cursor: pointer; line-height: 1; padding: 0 3px;
     }
     .btn-icon:hover { color: #ef4444; }
 
@@ -363,7 +362,7 @@
     }
     .btn-main:hover { background: var(--primary-dark); }
 
-    /* Google 地圖口袋清單側邊欄 */
+    /* ================= 固定的右側地圖口袋側邊欄 ================= */
     .map-sidebar {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -371,7 +370,7 @@
       padding: 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       position: sticky;
-      top: 16px;
+      top: 16px; /* 固釘在右側視窗頂部 */
     }
     .sidebar-head {
       display: flex;
@@ -389,7 +388,6 @@
       gap: 6px;
     }
 
-    /* 新增口袋地點表單 */
     .add-place-box {
       display: flex;
       flex-direction: column;
@@ -486,12 +484,12 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-height: 480px;
+      max-height: 500px;
       overflow-y: auto;
       padding-right: 4px;
     }
     
-    /* 💡 還原原本舒適的橫向結構 */
+    /* 原本橫向舒適排版 */
     .place-item {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -557,7 +555,7 @@
       color: white;
     }
 
-    /* 💡 簡約小巧的 x 刪除鍵（取代垃圾桶） */
+    /* 俐落的灰色 x 刪除鍵（非垃圾桶） */
     .btn-x-del {
       background: none;
       border: none;
@@ -611,10 +609,10 @@
     <div class="budget-items-container" id="budgetContainer"></div>
   </section>
 
-  <!-- 2. 主工作區 -->
+  <!-- 2. 主工作區：左側寬敞看板 ＋ 右側固定側邊欄 -->
   <div class="main-workspace">
     
-    <!-- 左側：看板 -->
+    <!-- 左側看板 -->
     <div>
       <div class="board-controls">
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
@@ -627,7 +625,7 @@
       <div class="board" id="boardContainer" ondragover="onColDragOver(event)" ondrop="onColDrop(event)"></div>
     </div>
 
-    <!-- 右側：Google 地圖口袋清單 (保留原排版，垃圾桶改為 ×) -->
+    <!-- 右側固定的 Google 地圖口袋清單側邊欄 -->
     <aside class="map-sidebar">
       <div class="sidebar-head">
         <h3>📍 地圖口袋清單</h3>
@@ -827,7 +825,7 @@
       card.innerHTML = `
         <div class="budget-item-top">
           <input type="text" class="budget-name-input" value="${item.name}" onchange="updateBudgetItem(${index}, 'name', this.value)">
-          <button class="btn-del-budget" onclick="deleteBudgetItem(${index})">×</button>
+          <button class="btn-del-budget" onclick="deleteBudgetItem(${index})" title="刪除此項目">×</button>
         </div>
         <div class="budget-item-bottom">
           <select class="budget-type-select" onchange="updateBudgetItem(${index}, 'type', this.value)">
@@ -898,9 +896,9 @@
 
       colDiv.innerHTML = `
         <div class="col-header">
-          <span class="col-drag-handle" title="按住拖曳調整欄位順序">⠿</span>
+          <span class="col-drag-handle" title="按住拖曳調整天數順序">⠿</span>
           <input type="text" class="col-title-input" value="${col.title}" onchange="updateColTitle(${colIndex}, this.value)">
-          <button class="btn-del-col" onclick="deleteColumn(${colIndex})" title="刪除整欄">🗑️</button>
+          <button class="btn-del-col" onclick="deleteColumn(${colIndex})" title="刪除整欄">×</button>
         </div>
         ${topRowHtml}
         <div class="card-list" ondragover="onBlockDragOver(event)" ondrop="onBlockDrop(event)"></div>
@@ -953,7 +951,7 @@
             ${timeControlHtml}
             <div class="block-actions">
               <div class="type-switcher" data-type="${b.type || 'leisure'}" onclick="cycleType(${colIndex}, ${blockIndex})"></div>
-              <button class="btn-icon" onclick="deleteBlock(${colIndex}, ${blockIndex})">×</button>
+              <button class="btn-icon" onclick="deleteBlock(${colIndex}, ${blockIndex})" title="刪除此卡片">×</button>
             </div>
           </div>
           <input type="text" class="block-title-input" value="${b.title}" placeholder="輸入活動名稱..." onchange="updateBlockField(${colIndex}, ${blockIndex}, 'title', this.value)">
@@ -1110,7 +1108,6 @@
     }
   }
 
-  // 💡 橫向排列，右邊乾淨放置 [🗺️] [＋] [×]
   function renderPlaces() {
     const list = document.getElementById('placesList');
     list.innerHTML = '';
