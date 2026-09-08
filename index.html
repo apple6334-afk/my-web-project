@@ -46,7 +46,6 @@
     }
     header h1 { font-size: 1.6rem; margin-bottom: 4px; }
     
-    /* 雲端同步狀態標籤 */
     .sync-status {
       display: inline-flex;
       align-items: center;
@@ -57,9 +56,7 @@
       font-size: 0.78rem;
       margin-top: 6px;
     }
-    .sync-dot {
-      width: 8px; height: 8px; border-radius: 50%; background: #10b981;
-    }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
     .sync-dot.saving { background: #facc15; animation: pulse 1s infinite; }
 
     @keyframes pulse {
@@ -153,14 +150,20 @@
       padding-bottom: 12px;
       align-items: flex-start;
     }
+    
+    /* 欄位整體樣式 (支援拖曳) */
     .column {
-      flex: 0 0 310px;
+      flex: 0 0 320px;
       border-radius: var(--radius);
       padding: 14px;
       display: flex;
       flex-direction: column;
       min-height: 540px;
-      transition: all 0.2s ease;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .column.dragging-col {
+      opacity: 0.35;
+      transform: scale(0.97);
     }
     .column.timeline-col { background: #e2e8f0; border: 1px solid #cbd5e1; }
     .column.pool-col { background: #f8fafc; border: 2px dashed #94a3b8; }
@@ -172,6 +175,15 @@
       margin-bottom: 8px;
       gap: 4px;
     }
+    .col-drag-handle {
+      cursor: grab;
+      font-size: 1.1rem;
+      color: #94a3b8;
+      padding: 0 4px;
+      user-select: none;
+    }
+    .col-drag-handle:active { cursor: grabbing; }
+
     .col-title-input {
       font-weight: 700; font-size: 0.95rem; color: #1e293b; border: 1px solid transparent; border-radius: 4px; padding: 2px 6px; background: transparent; width: 100%;
     }
@@ -201,11 +213,11 @@
       flex-grow: 1;
     }
 
-    /* 卡片 Block */
+    /* 卡片樣式 */
     .block {
       background: var(--card-bg);
       border-radius: 8px;
-      padding: 12px;
+      padding: 10px 12px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       cursor: grab;
       user-select: none;
@@ -223,23 +235,73 @@
     .block-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 4px;
+      align-items: center;
+      margin-bottom: 6px;
     }
-    .time-wrapper { display: flex; align-items: center; gap: 6px; }
+    .time-wrapper { display: flex; align-items: center; gap: 4px; }
     .block-time {
       font-size: 0.78rem; font-weight: 800; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #334155;
     }
-    .block-dur { font-size: 0.7rem; color: var(--muted); }
-    .block-actions { display: flex; gap: 6px; }
+    
+    .duration-input {
+      width: 42px;
+      padding: 1px 3px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      text-align: center;
+      background: transparent;
+    }
+    .duration-input:focus, .duration-input:hover {
+      border-color: var(--primary);
+      background: white;
+      outline: none;
+    }
+
+    .block-actions { display: flex; align-items: center; gap: 4px; }
+    
+    .type-switcher {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+    .type-switcher[data-type="leisure"] { background: #10b981; }
+    .type-switcher[data-type="food"] { background: #f97316; }
+    .type-switcher[data-type="highlight"] { background: #0284c7; }
+    .type-switcher[data-type="transit"] { background: #64748b; }
+
     .btn-icon {
-      background: none; border: none; color: #94a3b8; font-size: 0.9rem; cursor: pointer; line-height: 1; padding: 0 2px;
+      background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; line-height: 1; padding: 0 2px;
     }
     .btn-icon:hover { color: #ef4444; }
-    .btn-icon.edit-icon:hover { color: var(--primary); }
 
-    .block-title { font-weight: 600; font-size: 0.92rem; margin-bottom: 4px; color: var(--text); }
-    .block-desc { font-size: 0.8rem; color: var(--muted); }
+    .block-title-input {
+      width: 100%;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 2px 4px;
+      background: transparent;
+      margin-bottom: 2px;
+    }
+    .block-title-input:focus { background: white; border-color: var(--primary); outline: none; }
+
+    .block-desc-input {
+      width: 100%;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 2px 4px;
+      background: transparent;
+    }
+    .block-desc-input:focus { background: white; border-color: var(--primary); outline: none; }
 
     .add-block-btn {
       margin-top: 12px;
@@ -266,39 +328,6 @@
       cursor: pointer;
     }
     .btn-main:hover { background: var(--primary-dark); }
-
-    /* Modal */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 16px;
-    }
-    .modal {
-      background: white;
-      border-radius: var(--radius);
-      padding: 20px;
-      max-width: 440px;
-      width: 100%;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-    .modal h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--primary); }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #334155; }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.88rem;
-    }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-
-    .time-mode-switch { display: flex; gap: 6px; margin-bottom: 8px; }
-    .time-mode-btn {
-      flex: 1; padding: 6px; font-size: 0.78rem; font-weight: 600; background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; text-align: center; color: var(--muted);
-    }
-    .time-mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
   </style>
 </head>
 <body>
@@ -315,7 +344,7 @@
   <!-- 1. 預算區域 -->
   <section class="budget-section">
     <div class="section-header">
-      <div class="section-title">📊 預算支出清單（修改後自動同步給對方）</div>
+      <div class="section-title">📊 預算支出清單（直接點擊即可修改）</div>
       <button class="btn-main" onclick="addNewBudgetItem()">+ 新增支出項目</button>
     </div>
 
@@ -344,88 +373,13 @@
   <div class="board-controls">
     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
       <h2>📋 智慧排程看板</h2>
-      <span class="helper-tip">✨ 兩人皆可拖曳修改，自動即時儲存！</span>
+      <span class="helper-tip">✨ 按住 ⠿ 可拖曳調整天數順序！卡片與預算皆可直接點擊修改</span>
     </div>
-    <button class="btn-main" onclick="openAddColModal()">+ 新增天數 / 欄位</button>
+    <button class="btn-main" onclick="addNewColumn()">+ 新增天數 / 欄位</button>
   </div>
 
-  <div class="board" id="boardContainer"></div>
-</div>
-
-<!-- 新增/編輯積木 Modal -->
-<div class="modal-overlay" id="blockModal">
-  <div class="modal">
-    <h3 id="modalHead">編輯行程積木</h3>
-    <div class="form-group">
-      <label>活動名稱 *</label>
-      <input type="text" id="modalTitle" placeholder="活動名稱">
-    </div>
-
-    <div class="form-group">
-      <label>時間設定模式</label>
-      <div class="time-mode-switch">
-        <button type="button" class="time-mode-btn active" id="btnModeDuration" onclick="switchTimeMode('duration')">依活動時長 (推薦)</button>
-        <button type="button" class="time-mode-btn" id="btnModeExact" onclick="switchTimeMode('exact')">指定起訖時間</button>
-      </div>
-
-      <div id="panelDuration">
-        <label style="font-size:0.75rem; color:var(--muted);">預計耗時（分鐘）</label>
-        <input type="number" id="modalDuration" value="90" min="15" step="15">
-      </div>
-
-      <div id="panelExact" style="display:none; gap:6px; align-items:center;">
-        <input type="text" id="modalExactStart" placeholder="開始 (如 10:00)" style="flex:1;">
-        <span>~</span>
-        <input type="text" id="modalExactEnd" placeholder="結束 (如 12:00)" style="flex:1;">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>類型顏色</label>
-      <select id="modalType">
-        <option value="leisure">觀光放空（綠色）</option>
-        <option value="food">美食餐飲（橘色）</option>
-        <option value="highlight">核心體驗/浮潛（藍色）</option>
-        <option value="transit">交通移動（灰色）</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>備註說明</label>
-      <textarea id="modalDesc" rows="2" placeholder="詳細備註..."></textarea>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-icon" style="color:var(--muted); font-size:0.85rem;" onclick="closeModal('blockModal')">取消</button>
-      <button class="btn-main" onclick="saveBlock()">儲存並同步</button>
-    </div>
-  </div>
-</div>
-
-<!-- 新增欄位 Modal -->
-<div class="modal-overlay" id="columnModal">
-  <div class="modal">
-    <h3>新增天數 / 欄位</h3>
-    <div class="form-group">
-      <label>欄位名稱 *</label>
-      <input type="text" id="modalColName" placeholder="例如：Day 4、雨天備案">
-    </div>
-    <div class="form-group">
-      <label>欄位樣式與功能 *</label>
-      <select id="modalColStyle">
-        <option value="timeline">時間軸日程（灰底實線，自動骨牌排程）</option>
-        <option value="pool">備用 / 候選區（白底虛線，彈性待排）</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>首發出發時間（僅時間軸有效）</label>
-      <input type="text" id="modalColStartTime" value="09:00">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-icon" style="color:var(--muted); font-size:0.85rem;" onclick="closeModal('columnModal')">取消</button>
-      <button class="btn-main" onclick="confirmAddColumn()">確認建立</button>
-    </div>
-  </div>
+  <!-- 支援整欄拖曳排序的容器 -->
+  <div class="board" id="boardContainer" ondragover="onColDragOver(event)" ondrop="onColDrop(event)"></div>
 </div>
 
 <script>
@@ -439,7 +393,6 @@
     appId: "1:168967449687:web:084ca52c3ff09c49f04712"
   };
 
-  // 初始化 Firebase
   let db = null;
   let tripRef = null;
   let isRemoteUpdate = false;
@@ -555,6 +508,7 @@
     renderBoard();
   }
 
+  /* ===================== 1. 預算區塊 ===================== */
   function renderBudget() {
     const container = document.getElementById('budgetContainer');
     container.innerHTML = '';
@@ -613,6 +567,17 @@
     pushStateToCloud();
   }
 
+  /* ===================== 2. 看板與卡片渲染 ===================== */
+  const typeOrder = ['leisure', 'food', 'highlight', 'transit'];
+
+  function cycleType(colIndex, blockIndex) {
+    const current = appState.columns[colIndex].blocks[blockIndex].type || 'leisure';
+    const nextIndex = (typeOrder.indexOf(current) + 1) % typeOrder.length;
+    appState.columns[colIndex].blocks[blockIndex].type = typeOrder[nextIndex];
+    renderBoard();
+    pushStateToCloud();
+  }
+
   function renderBoard() {
     const container = document.getElementById('boardContainer');
     container.innerHTML = '';
@@ -621,6 +586,11 @@
       const colDiv = document.createElement('div');
       colDiv.className = `column ${col.style === 'timeline' ? 'timeline-col' : 'pool-col'}`;
       colDiv.setAttribute('data-col-index', colIndex);
+      colDiv.draggable = true;
+
+      // 欄位拖曳事件
+      colDiv.ondragstart = onColDragStart;
+      colDiv.ondragend = onColDragEnd;
 
       let topRowHtml = col.style === 'timeline'
         ? `<div class="day-start-row">
@@ -631,12 +601,13 @@
 
       colDiv.innerHTML = `
         <div class="col-header">
+          <span class="col-drag-handle" title="按住拖曳調整欄位順序">⠿</span>
           <input type="text" class="col-title-input" value="${col.title}" onchange="updateColTitle(${colIndex}, this.value)">
           <button class="btn-del-col" onclick="deleteColumn(${colIndex})" title="刪除整欄">🗑️</button>
         </div>
         ${topRowHtml}
-        <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)"></div>
-        <button class="add-block-btn" onclick="openAddBlockModal(${colIndex})">+ 新增活動積木</button>
+        <div class="card-list" ondragover="onBlockDragOver(event)" ondrop="onBlockDrop(event)"></div>
+        <button class="add-block-btn" onclick="addNewBlockDirect(${colIndex})">+ 新增活動積木</button>
       `;
 
       const cardList = colDiv.querySelector('.card-list');
@@ -644,7 +615,7 @@
 
       (col.blocks || []).forEach((b, blockIndex) => {
         const duration = b.duration || 60;
-        let timeLabel = "彈性待排";
+        let timeLabel = "待排";
         
         if (col.style === 'timeline') {
           const sStr = formatMinutesToTime(currentMins);
@@ -660,29 +631,50 @@
         blockEl.setAttribute('data-type', b.type || 'leisure');
         blockEl.setAttribute('data-col-index', colIndex);
         blockEl.setAttribute('data-block-index', blockIndex);
-        blockEl.ondragstart = onDragStart;
-        blockEl.ondragend = onDragEnd;
-        blockEl.ondblclick = () => editBlock(colIndex, blockIndex);
+        
+        // 卡片拖曳事件
+        blockEl.ondragstart = onBlockDragStart;
+        blockEl.ondragend = onBlockDragEnd;
 
         blockEl.innerHTML = `
           <div class="block-header">
             <div class="time-wrapper">
               <span class="block-time">${timeLabel}</span>
-              <span class="block-dur">(${duration}分)</span>
+              <span style="font-size:0.75rem; color:var(--muted);">(</span>
+              <input type="number" class="duration-input" value="${duration}" title="點擊修改時長（分鐘）" onchange="updateBlockField(${colIndex}, ${blockIndex}, 'duration', parseInt(this.value)||30)">
+              <span style="font-size:0.75rem; color:var(--muted);">分)</span>
             </div>
             <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(${colIndex}, ${blockIndex})">✏️</button>
+              <div class="type-switcher" data-type="${b.type || 'leisure'}" onclick="cycleType(${colIndex}, ${blockIndex})"></div>
               <button class="btn-icon" onclick="deleteBlock(${colIndex}, ${blockIndex})">×</button>
             </div>
           </div>
-          <div class="block-title">${b.title}</div>
-          <div class="block-desc">${b.desc || ''}</div>
+          <input type="text" class="block-title-input" value="${b.title}" placeholder="輸入活動名稱..." onchange="updateBlockField(${colIndex}, ${blockIndex}, 'title', this.value)">
+          <input type="text" class="block-desc-input" value="${b.desc || ''}" placeholder="輸入地點或備註..." onchange="updateBlockField(${colIndex}, ${blockIndex}, 'desc', this.value)">
         `;
         cardList.appendChild(blockEl);
       });
 
       container.appendChild(colDiv);
     });
+  }
+
+  function updateBlockField(colIndex, blockIndex, field, val) {
+    appState.columns[colIndex].blocks[blockIndex][field] = val;
+    renderBoard();
+    pushStateToCloud();
+  }
+
+  function addNewBlockDirect(colIndex) {
+    if (!appState.columns[colIndex].blocks) appState.columns[colIndex].blocks = [];
+    appState.columns[colIndex].blocks.push({
+      title: "新活動項目",
+      duration: 60,
+      type: "leisure",
+      desc: "點擊輸入地點備註"
+    });
+    renderBoard();
+    pushStateToCloud();
   }
 
   function updateColTitle(colIndex, val) {
@@ -712,39 +704,60 @@
     }
   }
 
-  function parseTimeToMinutes(str) {
-    if (!str) return 8 * 60;
-    const p = str.split(':');
-    return parseInt(p[0]) * 60 + parseInt(p[1] || 0);
+  function addNewColumn() {
+    const isTimeline = confirm("要建立【時間軸日程欄位】請按「確定」\n要建立【備用候選區】請按「取消」");
+    const name = prompt("請輸入欄位名稱：", isTimeline ? "Day 4" : "雨天備案");
+    if (!name) return;
+
+    appState.columns.push({
+      title: name,
+      style: isTimeline ? 'timeline' : 'pool',
+      startTime: "09:00",
+      blocks: []
+    });
+
+    renderBoard();
+    pushStateToCloud();
   }
 
-  function formatMinutesToTime(mins) {
-    const h = Math.floor(mins / 60) % 24;
-    const m = mins % 60;
-    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-  }
-
-  let draggedColIndex = null;
+  /* ===================== 3. 拖曳引擎 (分流卡片與欄位) ===================== */
+  let dragType = null; // 'block' 或 'column'
+  let draggedBlockCol = null;
   let draggedBlockIndex = null;
+  let draggedColIndex = null;
 
-  function onDragStart(e) {
+  // 卡片拖曳
+  function onBlockDragStart(e) {
+    if (e.target.tagName === 'INPUT') {
+      e.preventDefault();
+      return;
+    }
+    e.stopPropagation();
+    dragType = 'block';
     const block = e.currentTarget;
-    draggedColIndex = parseInt(block.getAttribute('data-col-index'));
+    draggedBlockCol = parseInt(block.getAttribute('data-col-index'));
     draggedBlockIndex = parseInt(block.getAttribute('data-block-index'));
     block.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
   }
 
-  function onDragEnd(e) {
+  function onBlockDragEnd(e) {
+    e.stopPropagation();
     e.currentTarget.classList.remove('dragging');
+    dragType = null;
   }
 
-  function onDragOver(e) {
+  function onBlockDragOver(e) {
+    if (dragType !== 'block') return;
     e.preventDefault();
+    e.stopPropagation();
   }
 
-  function onDrop(e) {
+  function onBlockDrop(e) {
+    if (dragType !== 'block') return;
     e.preventDefault();
+    e.stopPropagation();
+
     const list = e.currentTarget;
     const targetColDiv = list.closest('.column');
     const targetColIndex = parseInt(targetColDiv.getAttribute('data-col-index'));
@@ -757,9 +770,9 @@
       insertIndex = parseInt(afterEl.getAttribute('data-block-index'));
     }
 
-    const movingItem = appState.columns[draggedColIndex].blocks.splice(draggedBlockIndex, 1)[0];
+    const movingItem = appState.columns[draggedBlockCol].blocks.splice(draggedBlockIndex, 1)[0];
     
-    if (draggedColIndex === targetColIndex && draggedBlockIndex < insertIndex) {
+    if (draggedBlockCol === targetColIndex && draggedBlockIndex < insertIndex) {
       insertIndex--;
     }
 
@@ -786,114 +799,78 @@
     }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
-  let editingTarget = null;
-  let addingColIndex = null;
-  let currentTimeMode = 'duration';
-
-  function switchTimeMode(mode) {
-    currentTimeMode = mode;
-    if (mode === 'duration') {
-      document.getElementById('btnModeDuration').classList.add('active');
-      document.getElementById('btnModeExact').classList.remove('active');
-      document.getElementById('panelDuration').style.display = 'block';
-      document.getElementById('panelExact').style.display = 'none';
-    } else {
-      document.getElementById('btnModeExact').classList.add('active');
-      document.getElementById('btnModeDuration').classList.remove('active');
-      document.getElementById('panelDuration').style.display = 'none';
-      document.getElementById('panelExact').style.display = 'flex';
+  // 欄位拖曳 (Column Reorder)
+  function onColDragStart(e) {
+    if (e.target.tagName === 'INPUT' || dragType === 'block') {
+      return;
     }
+    dragType = 'column';
+    draggedColIndex = parseInt(e.currentTarget.getAttribute('data-col-index'));
+    e.currentTarget.classList.add('dragging-col');
+    e.dataTransfer.effectAllowed = 'move';
   }
 
-  function openAddBlockModal(colIndex) {
-    editingTarget = null;
-    addingColIndex = colIndex;
-    document.getElementById('modalHead').innerText = '新增活動積木';
-    document.getElementById('modalTitle').value = '';
-    document.getElementById('modalDuration').value = 90;
-    document.getElementById('modalExactStart').value = '';
-    document.getElementById('modalExactEnd').value = '';
-    document.getElementById('modalDesc').value = '';
-    document.getElementById('modalType').value = 'leisure';
-    switchTimeMode('duration');
-    document.getElementById('blockModal').style.display = 'flex';
+  function onColDragEnd(e) {
+    e.currentTarget.classList.remove('dragging-col');
+    dragType = null;
+    draggedColIndex = null;
   }
 
-  function editBlock(colIndex, blockIndex) {
-    editingTarget = { colIndex, blockIndex };
-    addingColIndex = null;
-    const b = appState.columns[colIndex].blocks[blockIndex];
-
-    document.getElementById('modalHead').innerText = '編輯活動積木';
-    document.getElementById('modalTitle').value = b.title;
-    document.getElementById('modalDuration').value = b.duration || 90;
-    document.getElementById('modalDesc').value = b.desc || '';
-    document.getElementById('modalType').value = b.type || 'leisure';
-    switchTimeMode('duration');
-    document.getElementById('blockModal').style.display = 'flex';
+  function onColDragOver(e) {
+    if (dragType !== 'column') return;
+    e.preventDefault();
   }
 
-  function saveBlock() {
-    const title = document.getElementById('modalTitle').value.trim();
-    if (!title) { alert("請輸入活動名稱！"); return; }
+  function onColDrop(e) {
+    if (dragType !== 'column') return;
+    e.preventDefault();
 
-    let duration = 90;
-    if (currentTimeMode === 'duration') {
-      duration = parseInt(document.getElementById('modalDuration').value) || 60;
+    const board = document.getElementById('boardContainer');
+    const afterCol = getColAfterElement(board, e.clientX);
+    let insertIndex;
+
+    if (afterCol == null) {
+      insertIndex = appState.columns.length;
     } else {
-      const s = parseTimeToMinutes(document.getElementById('modalExactStart').value);
-      const e = parseTimeToMinutes(document.getElementById('modalExactEnd').value);
-      duration = e > s ? (e - s) : 60;
+      insertIndex = parseInt(afterCol.getAttribute('data-col-index'));
     }
 
-    const type = document.getElementById('modalType').value;
-    const desc = document.getElementById('modalDesc').value.trim();
+    const movingCol = appState.columns.splice(draggedColIndex, 1)[0];
 
-    if (editingTarget) {
-      const target = appState.columns[editingTarget.colIndex].blocks[editingTarget.blockIndex];
-      target.title = title;
-      target.duration = duration;
-      target.type = type;
-      target.desc = desc;
-    } else if (addingColIndex !== null) {
-      if (!appState.columns[addingColIndex].blocks) {
-        appState.columns[addingColIndex].blocks = [];
+    if (draggedColIndex < insertIndex) {
+      insertIndex--;
+    }
+
+    appState.columns.splice(insertIndex, 0, movingCol);
+
+    renderBoard();
+    pushStateToCloud();
+  }
+
+  function getColAfterElement(container, x) {
+    const draggableCols = [...container.querySelectorAll('.column:not(.dragging-col)')];
+    return draggableCols.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = x - box.left - box.width / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
       }
-      appState.columns[addingColIndex].blocks.push({
-        title, duration, type, desc
-      });
-    }
-
-    closeModal('blockModal');
-    renderBoard();
-    pushStateToCloud();
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
-  function openAddColModal() {
-    document.getElementById('modalColName').value = '';
-    document.getElementById('columnModal').style.display = 'flex';
+  /* ===================== 時間輔助函數 ===================== */
+  function parseTimeToMinutes(str) {
+    if (!str) return 8 * 60;
+    const p = str.split(':');
+    return parseInt(p[0]) * 60 + parseInt(p[1] || 0);
   }
 
-  function confirmAddColumn() {
-    const name = document.getElementById('modalColName').value.trim();
-    if (!name) { alert("請輸入欄位名稱！"); return; }
-    const style = document.getElementById('modalColStyle').value;
-    const startTime = document.getElementById('modalColStartTime').value.trim() || "09:00";
-
-    appState.columns.push({
-      title: name,
-      style: style,
-      startTime: startTime,
-      blocks: []
-    });
-
-    closeModal('columnModal');
-    renderBoard();
-    pushStateToCloud();
-  }
-
-  function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
+  function formatMinutesToTime(mins) {
+    const h = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
   window.onload = function() {
