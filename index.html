@@ -432,6 +432,7 @@
   const firebaseConfig = {
     apiKey: "AIzaSyBzHkI_-19Dit2ZyG0ZBrPISFDqaFHnZIM",
     authDomain: "liuqiu-trip-8f045.firebaseapp.com",
+    databaseURL: "https://liuqiu-trip-8f045-default-rtdb.firebaseio.com",
     projectId: "liuqiu-trip-8f045",
     storageBucket: "liuqiu-trip-8f045.firebasestorage.app",
     messagingSenderId: "168967449687",
@@ -441,17 +442,17 @@
   // 初始化 Firebase
   let db = null;
   let tripRef = null;
-  let isRemoteUpdate = false; // 防止循環觸發監聽
+  let isRemoteUpdate = false;
+  let debounceTimer = null;
 
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.database();
     tripRef = db.ref('liuqiu_shared_trip');
   } catch (e) {
-    console.warn("Firebase 未設定或發生錯誤，目前僅於本地運行。請貼上有效的 firebaseConfig！", e);
+    console.warn("Firebase 初始化失敗，將以本地模式運行。", e);
   }
 
-  // 預設資料結構（若雲端第一次打開是空的，會以這份寫入雲端）
   const initialData = {
     budget: [
       { name: "台北 ⇄ 左營 高鐵來回", amount: 2980, type: "per" },
@@ -509,16 +510,18 @@
 
   let appState = JSON.parse(JSON.stringify(initialData));
 
-  // 雲端同步：自動儲存資料到 Firebase
   function pushStateToCloud() {
     if (!tripRef) return;
     setSyncIndicator(true);
-    tripRef.set(appState).then(() => {
-      setSyncIndicator(false);
-    }).catch(err => {
-      console.error("雲端同步失敗", err);
-      setSyncIndicator(false);
-    });
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      tripRef.set(appState).then(() => {
+        setSyncIndicator(false);
+      }).catch(err => {
+        console.error("雲端同步失敗", err);
+        setSyncIndicator(false);
+      });
+    }, 250);
   }
 
   function setSyncIndicator(isSaving) {
@@ -533,7 +536,6 @@
     }
   }
 
-  // 雲端監聽：任何人修改，所有打開網頁的人立即渲染最新畫面
   if (tripRef) {
     tripRef.on('value', (snapshot) => {
       const cloudData = snapshot.val();
@@ -543,13 +545,11 @@
         renderAll();
         isRemoteUpdate = false;
       } else {
-        // 資料庫是空的，初始化寫入
         pushStateToCloud();
       }
     });
   }
 
-  /* ===================== 渲染介面 ===================== */
   function renderAll() {
     renderBudget();
     renderBoard();
@@ -642,7 +642,7 @@
       const cardList = colDiv.querySelector('.card-list');
       let currentMins = parseTimeToMinutes(col.startTime || "08:30");
 
-      col.blocks.forEach((b, blockIndex) => {
+      (col.blocks || []).forEach((b, blockIndex) => {
         const duration = b.duration || 60;
         let timeLabel = "彈性待排";
         
@@ -712,7 +712,6 @@
     }
   }
 
-  /* ===================== 時間輔助函數 ===================== */
   function parseTimeToMinutes(str) {
     if (!str) return 8 * 60;
     const p = str.split(':');
@@ -725,7 +724,6 @@
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
-  /* ===================== 拖曳邏輯 ===================== */
   let draggedColIndex = null;
   let draggedBlockIndex = null;
 
@@ -751,21 +749,22 @@
     const targetColDiv = list.closest('.column');
     const targetColIndex = parseInt(targetColDiv.getAttribute('data-col-index'));
 
-    // 計算落點在第幾個卡片
     const afterEl = getDragAfterElement(list, e.clientY);
     let insertIndex;
     if (afterEl == null) {
-      insertIndex = appState.columns[targetColIndex].blocks.length;
+      insertIndex = (appState.columns[targetColIndex].blocks || []).length;
     } else {
       insertIndex = parseInt(afterEl.getAttribute('data-block-index'));
     }
 
-    // 移動資料
     const movingItem = appState.columns[draggedColIndex].blocks.splice(draggedBlockIndex, 1)[0];
     
-    // 如果同欄且由上往下拖，index 會少 1
     if (draggedColIndex === targetColIndex && draggedBlockIndex < insertIndex) {
       insertIndex--;
+    }
+
+    if (!appState.columns[targetColIndex].blocks) {
+      appState.columns[targetColIndex].blocks = [];
     }
 
     appState.columns[targetColIndex].blocks.splice(insertIndex, 0, movingItem);
@@ -787,8 +786,7 @@
     }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
-  /* ===================== Modal 管理 ===================== */
-  let editingTarget = null; // { colIndex, blockIndex }
+  let editingTarget = null;
   let addingColIndex = null;
   let currentTimeMode = 'duration';
 
@@ -858,6 +856,9 @@
       target.type = type;
       target.desc = desc;
     } else if (addingColIndex !== null) {
+      if (!appState.columns[addingColIndex].blocks) {
+        appState.columns[addingColIndex].blocks = [];
+      }
       appState.columns[addingColIndex].blocks.push({
         title, duration, type, desc
       });
@@ -895,7 +896,6 @@
     document.getElementById(id).style.display = 'none';
   }
 
-  // 初始載入（若未串 Firebase 則載入預設資料）
   window.onload = function() {
     if (!tripRef) {
       renderAll();
