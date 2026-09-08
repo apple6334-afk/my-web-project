@@ -3,35 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小琉球國慶連假 3天2夜 互動規劃表</title>
+  <title>小琉球國慶 3天2夜 互動規劃表</title>
   <style>
     :root {
       --primary: #0284c7;
       --primary-dark: #0369a1;
       --primary-light: #e0f2fe;
-      --accent: #f97316;
       --bg: #f8fafc;
       --card: #ffffff;
       --text: #1e293b;
       --muted: #64748b;
       --border: #e2e8f0;
       --radius: 12px;
-      --success: #10b981;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
       padding: 16px;
     }
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-    }
+    .container { max-width: 960px; margin: 0 auto; }
 
     header {
       background: linear-gradient(135deg, #0284c7, #0d9488);
@@ -40,7 +35,6 @@
       border-radius: var(--radius);
       margin-bottom: 20px;
       text-align: center;
-      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
     }
     header h1 { font-size: 1.6rem; margin-bottom: 6px; }
     header p { font-size: 0.9rem; opacity: 0.9; }
@@ -65,7 +59,7 @@
       gap: 20px;
     }
     @media (min-width: 768px) {
-      .grid-2 { grid-template-columns: 1.2fr 0.8fr; }
+      .grid-2 { grid-template-columns: 1.1fr 0.9fr; }
     }
 
     .card {
@@ -78,38 +72,29 @@
     }
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       color: var(--primary);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       border-bottom: 2px solid var(--primary-light);
       padding-bottom: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
 
-    /* 資訊看板 */
-    .info-box {
-      background: #f1f5f9;
-      border-left: 4px solid var(--primary);
-      padding: 12px 14px;
-      border-radius: 4px;
+    /* 費用清單表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 0.88rem;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
-    .info-box p { margin-bottom: 4px; }
-    .info-box p:last-child { margin-bottom: 0; }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    th { background-color: var(--primary-light); color: var(--primary-dark); }
+    .price-num { font-weight: 600; text-align: right; }
 
-    /* 互動試算工具 */
-    .calc-group {
-      margin-bottom: 14px;
-    }
-    .calc-group label {
-      display: block;
-      font-size: 0.88rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
+    /* 互動選項 */
     .calc-row {
       display: flex;
       align-items: center;
@@ -119,91 +104,61 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       margin-bottom: 6px;
-      font-size: 0.88rem;
-    }
-    .calc-row input[type="radio"], .calc-row input[type="checkbox"] {
-      margin-right: 8px;
-      transform: scale(1.1);
+      font-size: 0.85rem;
     }
 
-    /* 總額結果面板 */
+    /* 總額大字 */
     .total-panel {
       background: linear-gradient(135deg, #e0f2fe, #f0fdf4);
       border: 2px solid var(--primary);
       border-radius: var(--radius);
       padding: 16px;
       text-align: center;
+      margin-top: 12px;
     }
-    .total-title { font-size: 0.85rem; color: var(--muted); }
-    .total-amount { font-size: 2rem; font-weight: bold; color: var(--primary-dark); margin: 4px 0; }
-    .total-sub { font-size: 0.85rem; color: var(--muted); }
+    .total-amount { font-size: 1.8rem; font-weight: bold; color: var(--primary-dark); }
 
-    /* 行程清單 Checkbox */
-    .day-block {
-      margin-bottom: 16px;
+    /* 水上活動連結 */
+    .link-list {
+      list-style: none;
     }
-    .day-title {
-      font-weight: bold;
-      color: var(--primary-dark);
+    .link-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       margin-bottom: 8px;
-      font-size: 0.95rem;
-      background: var(--primary-light);
-      padding: 4px 8px;
-      border-radius: 6px;
+      font-size: 0.85rem;
     }
+    .btn-link {
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+    .btn-link:hover { background: var(--primary-dark); }
+
+    /* 行程項目 */
     .todo-item {
       display: flex;
       align-items: flex-start;
       gap: 10px;
       padding: 8px 0;
       border-bottom: 1px dashed var(--border);
-      font-size: 0.88rem;
+      font-size: 0.85rem;
     }
-    .todo-item:last-child { border-bottom: none; }
-    .todo-item input[type="checkbox"] {
-      margin-top: 4px;
-      transform: scale(1.15);
-      accent-color: var(--primary);
-    }
-    .todo-item.done {
-      text-decoration: line-through;
-      color: var(--muted);
-    }
+    .todo-item.done { text-decoration: line-through; color: var(--muted); }
     .time-badge {
       background: #e2e8f0;
-      color: #334155;
       font-size: 0.75rem;
       font-weight: 600;
       padding: 2px 6px;
       border-radius: 4px;
       white-space: nowrap;
-    }
-
-    /* 複製按鈕 */
-    .btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn:hover { background: var(--primary-dark); }
-    .btn-copy { float: right; margin-top: -6px; }
-
-    textarea.copy-box {
-      width: 100%;
-      height: 90px;
-      padding: 8px;
-      font-size: 0.82rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      resize: none;
-      background: #f8fafc;
-      color: var(--text);
-      margin-top: 8px;
     }
   </style>
 </head>
@@ -211,133 +166,167 @@
 
 <div class="container">
   <header>
-    <h1>小琉球 3天2夜 國慶連假規劃</h1>
-    <p>台北出發・雙人成行・免請假度假方案</p>
+    <h1>小琉球 3天2夜 雙人旅行規劃</h1>
+    <p>台北出發・國慶連假免請假・裡裡家 Lily Coliving</p>
     <div class="tag-container">
-      <span class="tag">📅 2026/10/09 (五) - 10/11 (日)</span>
-      <span class="tag">🏠 裡裡家 Lily Coliving (三民路)</span>
+      <span class="tag">📅 2026/10/09 - 10/11</span>
       <span class="tag">訂單號：6190.339.517</span>
     </div>
   </header>
 
   <div class="grid grid-2">
-    <!-- 左側：即時預算動態計算器 -->
+    <!-- 左側：費用詳列與動態試算 -->
     <div>
       <div class="card">
-        <h2>💰 費用動態試算器</h2>
+        <h2>🧾 確切固定開銷清單</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>每人分攤</th>
+              <th style="text-align:right;">雙人合計</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>台北 ⇄ 左營 高鐵來回全票</td>
+              <td>$2,980</td>
+              <td class="price-num">$5,960</td>
+            </tr>
+            <tr>
+              <td>裡裡家單人房 2間共2晚 (含稅)</td>
+              <td>$2,304</td>
+              <td class="price-num">$4,608</td>
+            </tr>
+            <tr>
+              <td>東琉線來回船票 (民宿代訂)</td>
+              <td>$420</td>
+              <td class="price-num">$840</td>
+            </tr>
+            <tr>
+              <td>島上機車 48hr (兩人一部/民宿代訂)</td>
+              <td>$400</td>
+              <td class="price-num">$800</td>
+            </tr>
+            <tr style="background:#f1f5f9; font-weight:bold;">
+              <td>固定支出小計</td>
+              <td>$6,104</td>
+              <td class="price-num">$12,208</td>
+            </tr>
+          </tbody>
+        </table>
 
-        <div class="info-box">
-          <p><strong>🔒 已確認之剛性開銷 (每人固定 $6,104)：</strong></p>
-          <p>• 台北 ⇄ 左營高鐵全票來回：$2,980</p>
-          <p>• 裡裡家單人房 2 晚（已訂含稅）：$2,304</p>
-          <p>• 民宿代訂來回船票：$420</p>
-          <p>• 民宿代訂機車（雙人合騎48小時分攤）：$400</p>
+        <h2 style="margin-top:16px;">⚙️ 彈性花費切換試算</h2>
+        <div style="font-size:0.85rem; margin-bottom:6px; font-weight:600;">左營 ⇄ 東港接駁方式：</div>
+        <div class="calc-row">
+          <label><input type="radio" name="transit" value="450" checked onchange="calc()"> 九人座共乘拼車來回 (直達碼頭)</label>
+          <span>$450 /人</span>
+        </div>
+        <div class="calc-row">
+          <label><input type="radio" name="transit" value="250" onchange="calc()"> 台灣好行 9127-D 公車來回</label>
+          <span>$250 /人</span>
         </div>
 
-        <div class="calc-group">
-          <label>1. 高鐵左營站 ⇄ 東港碼頭 交通：</label>
-          <div class="calc-row">
-            <label><input type="radio" name="transit" value="250" checked onchange="calculate()"> 台灣好行 9127-D 來回票 (最省)</label>
-            <span>$250 /人</span>
-          </div>
-          <div class="calc-row">
-            <label><input type="radio" name="transit" value="480" onchange="calculate()"> 九人座共乘接駁車來回 (無縫接送)</label>
-            <span>$480 /人</span>
-          </div>
+        <div style="font-size:0.85rem; margin:10px 0 6px; font-weight:600;">水上活動：</div>
+        <div class="calc-row">
+          <label><input type="radio" name="water" value="450" checked onchange="calc()"> 浮潛看海龜 (含攝影與裝備)</label>
+          <span>$450 /人</span>
+        </div>
+        <div class="calc-row">
+          <label><input type="radio" name="water" value="1250" onchange="calc()"> SUP 立式划槳浪板</label>
+          <span>$1,250 /人</span>
+        </div>
+        <div class="calc-row">
+          <label><input type="radio" name="water" value="0" onchange="calc()"> 不下水純岸上放空</label>
+          <span>$0</span>
         </div>
 
-        <div class="calc-group">
-          <label>2. 水上活動項目：</label>
-          <div class="calc-row">
-            <label><input type="radio" name="water" value="450" checked onchange="calculate()"> 基礎浮潛看海龜 (教練帶領+拍照)</label>
-            <span>$450 /人</span>
-          </div>
-          <div class="calc-row">
-            <label><input type="radio" name="water" value="1250" onchange="calculate()"> SUP 立槳浪板體驗</label>
-            <span>$1,250 /人</span>
-          </div>
-          <div class="calc-row">
-            <label><input type="radio" name="water" value="0" onchange="calculate()"> 不下水 / 純岸上踏浪吹海風</label>
-            <span>$0</span>
-          </div>
+        <div style="font-size:0.85rem; margin:10px 0 6px; font-weight:600;">3天伙食與烤肉：</div>
+        <div class="calc-row">
+          <label><input type="radio" name="food" value="1650" checked onchange="calc()"> 經典小吃 + 海鮮BBQ炭烤吃到飽</label>
+          <span>約 $1,650 /人</span>
         </div>
-
-        <div class="calc-group">
-          <label>3. 餐飲與現場雜支等級：</label>
-          <div class="calc-row">
-            <label><input type="radio" name="food" value="1800" checked onchange="calculate()"> 經典方案 (含BBQ碳烤吃到飽、小吃、東港海鮮)</label>
-            <span>約 $1,800 /人</span>
-          </div>
-          <div class="calc-row">
-            <label><input type="radio" name="food" value="2600" onchange="calculate()"> 寬裕享受 (加碼海景餐酒館小酌、伴手禮麻花捲)</label>
-            <span>約 $2,600 /人</span>
-          </div>
+        <div class="calc-row">
+          <label><input type="radio" name="food" value="2400" onchange="calc()"> 升級海鮮餐酒館 + 買滿麻花捲</label>
+          <span>約 $2,400 /人</span>
         </div>
 
         <div class="total-panel">
-          <div class="total-title">預估每人全包總花費</div>
-          <div class="total-amount" id="perPersonTotal">NT$ 8,604</div>
-          <div class="total-sub">兩人合計預估：<strong id="groupTotal">NT$ 17,208</strong></div>
+          <div style="font-size:0.85rem; color:var(--muted);">預估全包總花費</div>
+          <div class="total-amount" id="perPersonTotal">NT$ 9,054 /人</div>
+          <div style="font-size:0.85rem; color:var(--muted);">兩人總花費預算：<strong id="groupTotal">NT$ 18,108</strong></div>
         </div>
       </div>
 
-      <!-- 快速複製民宿代訂訊息 -->
+      <!-- 水上活動連結卡片 -->
       <div class="card">
-        <h2>
-          <span>📩 民宿代訂備忘文字</span>
-          <button class="btn btn-copy" onclick="copyText()">複製文字</button>
-        </h2>
-        <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 4px;">傳至 Booking.com 訊息或民宿電話確認：</p>
-        <textarea id="lineMsg" class="copy-box" readonly>您好，我是預訂 10/9 - 10/11 單人房的住客謝庭恩（訂單號：6190.339.517）。預計 10/9 約 12:00-13:00 抵達，想確認代訂：1. 來回船票 2 位（420元/位） 2. 燃油機車 1 台（48小時/800元）。請問屆時取票與牽車流程為何？謝謝！</textarea>
+        <h2>🌊 水上活動快速搜尋與預訂</h2>
+        <ul class="link-list">
+          <li class="link-item">
+            <div>
+              <strong>小琉球 浮潛看海龜（含水下攝影）</strong>
+              <div style="color:var(--muted); font-size:0.75rem;">約 $400 - 450 元 / 人</div>
+            </div>
+            <a href="https://www.kkday.com/zh-tw/product/productlist?keyword=%E5%B0%8F%E7%90%89%E7%90%83%20%E6%B5%AE%E6%BD%9潜" target="_blank" class="btn-link">前往 KKday</a>
+          </li>
+          <li class="link-item">
+            <div>
+              <strong>小琉球 SUP 立槳 / 透明獨木舟</strong>
+              <div style="color:var(--muted); font-size:0.75rem;">約 $1,200 - 1,500 元 / 人</div>
+            </div>
+            <a href="https://www.klook.com/zh-TW/search/result/?query=%E5%B0%8F%E7%90%89%E7%90%83%20SUP" target="_blank" class="btn-link">前往 Klook</a>
+          </li>
+        </ul>
+        <p style="font-size:0.78rem; color:var(--muted); margin-top:6px;">* 亦可於抵達當天直接請裡裡家配合的特約浮潛社安排，價格同樣約 400～450 元。</p>
       </div>
     </div>
 
-    <!-- 右側：行程表與出發提醒 -->
+    <!-- 右側：行程表 -->
     <div>
       <div class="card">
-        <h2>📋 3天2夜 互動行程清單 (可勾選)</h2>
+        <h2>📋 3天2夜 建議行程 Check-list</h2>
         
-        <div class="day-block">
-          <div class="day-title">Day 1：10/9 (五) 登島與環島夕陽</div>
+        <div style="margin-bottom:12px;">
+          <div style="font-weight:bold; color:var(--primary-dark); font-size:0.9rem; margin-bottom:6px;">Day 1：10/9 (五) 登島夕陽</div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">07:30</span> 台北高鐵出發往左營（約09:35抵達）</div>
+            <div><span class="time-badge">07:30</span> 台北高鐵出發往左營（09:35抵達）</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">10:00</span> 左營轉乘接駁車／9127-D 直奔東港碼頭</div>
+            <div><span class="time-badge">09:50</span> 搭九人座共乘拼車直達東港碼頭</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">11:00</span> 東港窗口報名領船票，搭船登島</div>
+            <div><span class="time-badge">11:00</span> 窗口領船票，搭船登島</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">12:00</span> 碼頭牽機車 ➔ 裡裡家放行李 ➔ 市區吃午餐</div>
+            <div><span class="time-badge">12:00</span> 牽機車 ➔ 裡裡家放行李 ➔ 吃相思麵</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">14:00</span> 花瓶岩、美人洞望海亭看海龜</div>
+            <div><span class="time-badge">14:30</span> 花瓶岩、美人洞望海亭遠眺海龜</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">17:00</span> 落日亭看海景日落 ➔ 晚餐海鮮 BBQ 吃到飽</div>
+            <div><span class="time-badge">17:00</span> 落日亭看夕陽 ➔ 晚餐海鮮炭烤吃到飽</div>
           </div>
         </div>
 
-        <div class="day-block">
-          <div class="day-title">Day 2：10/10 (六) 浮潛看海龜與放空</div>
+        <div style="margin-bottom:12px;">
+          <div style="font-weight:bold; color:var(--primary-dark); font-size:0.9rem; margin-bottom:6px;">Day 2：10/10 (六) 浮潛看海龜</div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
             <div><span class="time-badge">08:30</span> 洪媽媽早餐店（琉球粿、蔥油條）</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">10:00</span> 浮潛看海龜體驗（光線最佳時段）</div>
+            <div><span class="time-badge">10:00</span> 浮潛看海龜（光線最佳、浪況平穩）</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">12:30</span> 民宿沖澡 ➔ 吹冷氣午餐、芒果雪花冰避暑</div>
+            <div><span class="time-badge">12:30</span> 沖澡更衣 ➔ 吹冷氣吃午餐、芒果冰避暑</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
@@ -345,12 +334,12 @@
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">18:30</span> 特色海鮮熱炒或海景餐酒館 ➔ 伴手禮麻花捲</div>
+            <div><span class="time-badge">18:30</span> 海鮮熱炒聚餐 ➔ 買伴手禮麻花捲</div>
           </div>
         </div>
 
-        <div class="day-block">
-          <div class="day-title">Day 3：10/11 (日) 秘境與避開排隊北返</div>
+        <div>
+          <div style="font-weight:bold; color:var(--primary-dark); font-size:0.9rem; margin-bottom:6px;">Day 3：10/11 (日) 避開人潮北返</div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
             <div><span class="time-badge">09:00</span> 百年老榕樹秘境俯瞰厚石裙礁</div>
@@ -361,45 +350,34 @@
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">12:00</span> <strong>搭船回東港</strong>（避開下午排隊大潮）</div>
+            <div><span class="time-badge">11:45</span> 搭船回東港（避開下午排隊大潮）</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">12:40</span> 東港華僑市場吃黑鮪魚生魚片、旗魚黑輪</div>
+            <div><span class="time-badge">12:30</span> 華僑市場吃黑鮪魚生魚片、旗魚黑輪</div>
           </div>
           <div class="todo-item">
             <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">14:30</span> 接駁回左營高鐵 ➔ 搭車返回台北</div>
+            <div><span class="time-badge">14:30</span> 九人座接駁回左營 ➔ 搭高鐵回台北</div>
           </div>
         </div>
 
-      </div>
-
-      <!-- 重要備忘 -->
-      <div class="card">
-        <h2>⚠️ 行前重點檢查</h2>
-        <ul style="padding-left: 20px; font-size: 0.85rem; line-height: 1.8;">
-          <li><strong>搶高鐵票</strong>：9/10（四）凌晨 0:00 準時搶 10/9 去程與 10/11 回程車票。</li>
-          <li><strong>裡裡家付款</strong>：只收現金，且需於入住前 7 天（10/2 前）預付訂單全額。</li>
-          <li><strong>證件與裝備</strong>：普通重型機車駕照、健保卡、海洋友善防曬乳或水母衣。</li>
-          <li><strong>現金準備</strong>：建議兩人出發前備妥約 8,000～10,000 元現金。</li>
-        </ul>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  function calculate() {
-    const baseFixed = 6104; // 高鐵2980 + 住宿2304 + 船票420 + 機車400
+  function calc() {
+    const fixed = 6104; // 2980高鐵 + 2304住宿 + 420船票 + 400機車
     const transit = parseInt(document.querySelector('input[name="transit"]:checked').value);
     const water = parseInt(document.querySelector('input[name="water"]:checked').value);
     const food = parseInt(document.querySelector('input[name="food"]:checked').value);
 
-    const perPerson = baseFixed + transit + water + food;
+    const perPerson = fixed + transit + water + food;
     const group = perPerson * 2;
 
-    document.getElementById('perPersonTotal').innerText = 'NT$ ' + perPerson.toLocaleString();
+    document.getElementById('perPersonTotal').innerText = 'NT$ ' + perPerson.toLocaleString() + ' /人';
     document.getElementById('groupTotal').innerText = 'NT$ ' + group.toLocaleString();
   }
 
@@ -410,14 +388,6 @@
     } else {
       parent.classList.remove('done');
     }
-  }
-
-  function copyText() {
-    const copyText = document.getElementById("lineMsg");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(copyText.value);
-    alert("已複製詢問文字，可直接貼給民宿！");
   }
 </script>
 
