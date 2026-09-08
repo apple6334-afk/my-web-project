@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小琉球國慶連假 3天2夜 互動看板與預算儀表板</title>
+  <title>小琉球國慶連假 3天2夜 自由預算與行程看板</title>
   <style>
     :root {
       --primary: #0284c7;
@@ -53,7 +53,7 @@
       font-size: 0.8rem;
     }
 
-    /* 預算儀表板區域 */
+    /* 預算儀表板 */
     .budget-section {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -66,9 +66,11 @@
       font-size: 1.15rem;
       font-weight: 700;
       color: var(--primary-dark);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       gap: 8px;
     }
 
@@ -92,37 +94,71 @@
     .metric-val { font-size: 1.55rem; font-weight: 800; color: var(--text); margin: 4px 0; }
     .metric-sub { font-size: 0.78rem; color: var(--muted); }
 
-    /* 控制列與選項 */
-    .calc-controls {
+    /* 自由輸入網格 (Custom Inputs) */
+    .inputs-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
       background: #f1f5f9;
-      padding: 14px;
+      padding: 16px;
       border-radius: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    .control-box label {
-      display: block;
-      font-size: 0.82rem;
+    .input-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .input-box label {
+      font-size: 0.8rem;
       font-weight: 700;
       color: #334155;
-      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
     }
-    .control-box select {
-      width: 100%;
-      padding: 8px 10px;
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      background: white;
       border: 1px solid var(--border);
       border-radius: 6px;
+      overflow: hidden;
+      padding: 0 8px;
+    }
+    .input-wrapper span {
       font-size: 0.85rem;
-      background: white;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .input-wrapper input {
+      width: 100%;
+      border: none;
+      padding: 8px 6px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+      outline: none;
+      text-align: right;
+    }
+    .quick-tags {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .q-tag {
+      background: #e2e8f0;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
       cursor: pointer;
+      color: #475569;
+      border: none;
     }
+    .q-tag:hover { background: var(--primary-light); color: var(--primary-dark); }
 
-    /* 費用條形圖可視化 */
-    .bar-visual-container {
-      margin-top: 10px;
-    }
+    /* 條形可視化 */
+    .bar-visual-container { margin-top: 8px; }
     .bar-visual-label {
       display: flex;
       justify-content: space-between;
@@ -154,14 +190,13 @@
     .legend-item { display: flex; align-items: center; gap: 4px; }
     .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
-    /* 看板網格 */
+    /* 看板欄位與積木 */
     .board {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 16px;
       align-items: start;
     }
-
     .column {
       background: #e2e8f0;
       border-radius: var(--radius);
@@ -175,18 +210,13 @@
       background: #f8fafc;
       border: 2px dashed #94a3b8;
     }
-
     .col-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
     }
-    .col-title {
-      font-weight: 700;
-      font-size: 0.98rem;
-      color: #1e293b;
-    }
+    .col-title { font-weight: 700; font-size: 0.98rem; color: #1e293b; }
     .col-badge {
       font-size: 0.72rem;
       background: white;
@@ -195,14 +225,12 @@
       color: var(--muted);
       font-weight: bold;
     }
-
     .card-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
       flex-grow: 1;
     }
-
     .block {
       background: var(--card-bg);
       border-radius: 8px;
@@ -245,13 +273,7 @@
       padding: 0 4px;
     }
     .btn-del:hover { color: #ef4444; }
-
-    .block-title {
-      font-weight: 600;
-      font-size: 0.92rem;
-      margin-bottom: 4px;
-      color: var(--text);
-    }
+    .block-title { font-weight: 600; font-size: 0.92rem; margin-bottom: 4px; color: var(--text); }
     .block-desc { font-size: 0.8rem; color: var(--muted); }
 
     .add-block-btn {
@@ -269,7 +291,7 @@
     }
     .add-block-btn:hover { background: var(--primary-light); }
 
-    /* Modal 彈跳視窗 */
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -319,13 +341,23 @@
     }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #e2e8f0; color: #475569; }
+    .btn-reset {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-reset:hover { background: #e2e8f0; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1>小琉球 3天2夜 互動行程與預算看板</h1>
+    <h1>小琉球 3天2夜 自由預算與行程看板</h1>
     <div class="badge-bar">
       <span class="badge">📅 2026/10/09 - 10/11</span>
       <span class="badge">🏠 裡裡家 Lily Coliving (三民路)</span>
@@ -333,60 +365,143 @@
     </div>
   </header>
 
-  <!-- 💡 全新直觀預算儀表板 -->
+  <!-- 💡 自由輸入預算區域 -->
   <section class="budget-section">
-    <div class="section-title">📊 預算與開銷即時儀表板</div>
+    <div class="section-title">
+      <span>📊 即時動態開銷試算（可直接手動修改金額）</span>
+      <button class="btn-reset" onclick="resetToDefault()">↺ 恢復預設推薦值</button>
+    </div>
     
-    <!-- 數據卡片 -->
+    <!-- 總額數據面板 -->
     <div class="metric-grid">
       <div class="metric-card">
-        <div class="metric-label">已確認剛性開銷 (每人)</div>
-        <div class="metric-val">NT$ 6,104</div>
-        <div class="metric-sub">高鐵$2,980 + 住宿$2,304 + 船票$420 + 車$400</div>
+        <div class="metric-label">目前每人總預算 (每人分攤)</div>
+        <div class="metric-val" id="totalPerPerson">NT$ 9,054</div>
+        <div class="metric-sub">固定支出：<strong id="fixedSubtotal">$6,104</strong> /人</div>
       </div>
       <div class="metric-card accent">
-        <div class="metric-label">預估全包總花費 (每人)</div>
-        <div class="metric-val" id="totalPerPerson">NT$ 9,054</div>
-        <div class="metric-sub">雙人全包合計：<strong id="totalGroup">NT$ 18,108</strong></div>
+        <div class="metric-label">雙人全包總花費 (2人合計)</div>
+        <div class="metric-val" id="totalGroup">NT$ 18,108</div>
+        <div class="metric-sub">全部項目之兩人總和</div>
       </div>
       <div class="metric-card cash">
-        <div class="metric-label">建議出發攜帶現金 (雙人總和)</div>
+        <div class="metric-label">建議出發備足現金 (雙人總和)</div>
         <div class="metric-val" id="cashEstimate">NT$ 8,000 - 10,000</div>
-        <div class="metric-sub">住宿尾款、小吃、租車、浮潛皆收現</div>
+        <div class="metric-sub">住宿尾款、小吃、車資浮潛多收現金</div>
       </div>
     </div>
 
-    <!-- 方案切換控制器 -->
-    <div class="calc-controls">
-      <div class="control-box">
-        <label>左營 ⇄ 東港碼頭 交通：</label>
-        <select id="selTransit" onchange="updateBudget()">
-          <option value="450" selected>九人座共乘接駁來回 ($450/人)</option>
-          <option value="250">台灣好行 9127-D 公車來回 ($250/人)</option>
-        </select>
+    <!-- 自由金額輸入表單 -->
+    <div class="inputs-grid">
+      <!-- 1. 高鐵 -->
+      <div class="input-box">
+        <label>台北 ⇄ 左營 高鐵 (每人)</label>
+        <div class="input-wrapper">
+          <span>NT$</span>
+          <input type="number" id="inpHsr" value="2980" oninput="calculateCustomBudget()">
+        </div>
+        <div class="quick-tags">
+          <button class="q-tag" onclick="setVal('inpHsr', 2980)">全票 $2,980</button>
+          <button class="q-tag" onclick="setVal('inpHsr', 2380)">8折早鳥 $2,380</button>
+        </div>
       </div>
-      <div class="control-box">
-        <label>水上體驗活動：</label>
-        <select id="selWater" onchange="updateBudget()">
-          <option value="450" selected>熊潛水浮潛看海龜 ($450/人)</option>
-          <option value="1250">SUP 立式划槳浪板 ($1,250/人)</option>
-          <option value="0">不下水 / 岸上吹海風 ($0)</option>
-        </select>
+
+      <!-- 2. 住宿 -->
+      <div class="input-box">
+        <label>裡裡家住宿 2晚 (每人)</label>
+        <div class="input-wrapper">
+          <span>NT$</span>
+          <input type="number" id="inpHotel" value="2304" oninput="calculateCustomBudget()">
+        </div>
+        <div class="quick-tags">
+          <button class="q-tag" onclick="setVal('inpHotel', 2304)">已訂單人房 $2,304</button>
+        </div>
       </div>
-      <div class="control-box">
-        <label>飲食與雜支等級：</label>
-        <select id="selFood" onchange="updateBudget()">
-          <option value="2050" selected>經典小吃 + 海鮮BBQ炭烤 ($2,050/人)</option>
-          <option value="2800">升級海鮮餐酒館 + 伴手禮買滿 ($2,800/人)</option>
-        </select>
+
+      <!-- 3. 來回船票 -->
+      <div class="input-box">
+        <label>東港來回船票 (每人)</label>
+        <div class="input-wrapper">
+          <span>NT$</span>
+          <input type="number" id="inpBoat" value="420" oninput="calculateCustomBudget()">
+        </div>
+        <div class="quick-tags">
+          <button class="q-tag" onclick="setVal('inpBoat', 420)">民宿代訂 $420</button>
+        </div>
+      </div>
+
+      <!-- 4. 機車 -->
+      <div class="input-box">
+        <label>機車 48hr (每人分攤)</label>
+        <div class="input-wrapper">
+          <span>NT$</span>
+          <input type="number" id="inpMoto" value="400" oninput="calculateCustomBudget()">
+        </div>
+        <div class="quick-tags">
+          <button class="q-tag" onclick="setVal('inpMoto', 400)">合騎1台 $400</button>
+          <button class="q-tag" onclick="setVal('inpMoto', 800)">一人1台 $800</button>
+        </div>
+      </div>
+
+      <!-- 5. 左營接駁 -->
+      <div class="input-box">
+        <label>左營 ⇄ 東港接駁 (每人)</label>
+        <div class="input-wrapper">
+          <span>NT$</span>
+          <input type="number" id="inpTransit" value="450" oninput="calculateCustomBudget()">
+        </div>
+        <div class="quick-tags">
+          <button class="q-tag" onclick="setVal('inpTransit', 450)">九人拼車 $450</button>
+          <button class="q-tag" onclick="setVal('inpTransit', 250)">好行公車 $250</button>
+        </div>
+      </div>
+
+      <!-- 6. 水上活動 -->
+      <div class="input-box">
+        <label>水上活動 (每人)</label>
+        <div class="input-wrapper">
+          <span>NT$</span>
+          <input type="number" id="inpWater" value="450" oninput="calculateCustomBudget()">
+        </div>
+        <div class="quick-tags">
+          <button class="q-tag" onclick="setVal('inpWater', 450)">熊潛水浮潛 $450</button>
+          <button class="q-tag" onclick="setVal('inpWater', 1250)">SUP立槳 $1,250</button>
+          <button class="q-tag" onclick="setVal('inpWater', 0)">不下水 $0</button>
+        </div>
+      </div>
+
+      <!-- 7. BBQ與三餐饮食 -->
+      <div class="input-box">
+        <label>3天伙食與BBQ (每人)</label>
+        <div class="input-wrapper">
+          <span>NT$</span>
+          <input type="number" id="inpFood" value="1650" oninput="calculateCustomBudget()">
+        </div>
+        <div class="quick-tags">
+          <button class="q-tag" onclick="setVal('inpFood', 1650)">小吃+烤肉 $1,650</button>
+          <button class="q-tag" onclick="setVal('inpFood', 2200)">吃好一點 $2,200</button>
+        </div>
+      </div>
+
+      <!-- 8. 伴手禮與雜支 -->
+      <div class="input-box">
+        <label>麻花捲與雜支 (每人)</label>
+        <div class="input-wrapper">
+          <span>NT$</span>
+          <input type="number" id="inpMisc" value="400" oninput="calculateCustomBudget()">
+        </div>
+        <div class="quick-tags">
+          <button class="q-tag" onclick="setVal('inpMisc', 400)">基本伴手 $400</button>
+          <button class="q-tag" onclick="setVal('inpMisc', 800)">送禮買滿 $800</button>
+        </div>
       </div>
     </div>
 
     <!-- 視覺化比例條形圖 -->
     <div class="bar-visual-container">
       <div class="bar-visual-label">
-        <span>開銷分佈比例 (每人)</span>
-        <span id="ratioText">固定 67% ｜ 接駁 5% ｜ 活動 5% ｜ 飲食雜支 23%</span>
+        <span>開銷佔比分析</span>
+        <span id="ratioText">計算中...</span>
       </div>
       <div class="bar-wrapper">
         <div class="bar-seg seg-fixed" id="barFixed" style="width: 67%;"></div>
@@ -395,10 +510,10 @@
         <div class="bar-seg seg-food" id="barFood" style="width: 23%;"></div>
       </div>
       <div class="legend-row">
-        <div class="legend-item"><span class="dot seg-fixed"></span> 剛性固定支出 ($6,104)</div>
+        <div class="legend-item"><span class="dot seg-fixed"></span> 大交通與住宿 (高鐵/房間/船票/機車)</div>
         <div class="legend-item"><span class="dot seg-transit"></span> 左營東港接駁</div>
-        <div class="legend-item"><span class="dot seg-water"></span> 水上活動體驗</div>
-        <div class="legend-item"><span class="dot seg-food"></span> 3天飲食與伴手禮</div>
+        <div class="legend-item"><span class="dot seg-water"></span> 水上體驗</div>
+        <div class="legend-item"><span class="dot seg-food"></span> 伙食、伴手禮與雜支</div>
       </div>
     </div>
   </section>
@@ -427,7 +542,7 @@
             <button class="btn-del" onclick="delBlock(this)">×</button>
           </div>
           <div class="block-title">接駁車至東港 ➔ 搭船登島</div>
-          <div class="block-desc">九人座接駁直達碼頭，取票搭船。</div>
+          <div class="block-desc">接駁直達碼頭，取票搭船。</div>
         </div>
         <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
           <div class="block-header">
@@ -478,7 +593,7 @@
             <button class="btn-del" onclick="delBlock(this)">×</button>
           </div>
           <div class="block-title">熊潛水浮潛看海龜 (加贈照片)</div>
-          <div class="block-desc">花瓶岩/美人洞/龍蝦洞，近距離與海龜合照！</div>
+          <div class="block-desc">美人洞/花瓶岩/龍蝦洞，近距離與海龜合照！</div>
         </div>
         <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
           <div class="block-header">
@@ -486,7 +601,7 @@
             <button class="btn-del" onclick="delBlock(this)">×</button>
           </div>
           <div class="block-title">回民宿沖澡 ➔ 午餐避暑</div>
-          <div class="block-desc">房間私人衛浴沖洗更衣，吹冷氣吃芒果冰。</div>
+          <div class="block-desc">私人衛浴沖洗更衣，吹冷氣吃芒果冰。</div>
         </div>
         <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
           <div class="block-header">
@@ -630,32 +745,59 @@
 </div>
 
 <script>
-  // 預算動態計算與長條圖更新
-  function updateBudget() {
-    const fixed = 6104; // 2980高鐵 + 2304住宿 + 420船票 + 400機車
-    const transit = parseInt(document.getElementById('selTransit').value);
-    const water = parseInt(document.getElementById('selWater').value);
-    const food = parseInt(document.getElementById('selFood').value);
+  // 自由輸入即時動態計算
+  function calculateCustomBudget() {
+    const hsr = parseInt(document.getElementById('inpHsr').value) || 0;
+    const hotel = parseInt(document.getElementById('inpHotel').value) || 0;
+    const boat = parseInt(document.getElementById('inpBoat').value) || 0;
+    const moto = parseInt(document.getElementById('inpMoto').value) || 0;
+    
+    const transit = parseInt(document.getElementById('inpTransit').value) || 0;
+    const water = parseInt(document.getElementById('inpWater').value) || 0;
+    const food = parseInt(document.getElementById('inpFood').value) || 0;
+    const misc = parseInt(document.getElementById('inpMisc').value) || 0;
 
-    const total = fixed + transit + water + food;
+    const fixed = hsr + hotel + boat + moto;
+    const foodAndMisc = food + misc;
+    const total = fixed + transit + water + foodAndMisc;
     const groupTotal = total * 2;
 
+    document.getElementById('fixedSubtotal').innerText = '$' + fixed.toLocaleString();
     document.getElementById('totalPerPerson').innerText = 'NT$ ' + total.toLocaleString();
     document.getElementById('totalGroup').innerText = 'NT$ ' + groupTotal.toLocaleString();
 
-    // 更新進度條百分比
-    const pFixed = Math.round((fixed / total) * 100);
-    const pTransit = Math.round((transit / total) * 100);
-    const pWater = Math.round((water / total) * 100);
-    const pFood = 100 - pFixed - pTransit - pWater;
+    // 更新長條圖與佔比
+    if (total > 0) {
+      const pFixed = Math.round((fixed / total) * 100);
+      const pTransit = Math.round((transit / total) * 100);
+      const pWater = Math.round((water / total) * 100);
+      const pFood = 100 - pFixed - pTransit - pWater;
 
-    document.getElementById('barFixed').style.width = pFixed + '%';
-    document.getElementById('barTransit').style.width = pTransit + '%';
-    document.getElementById('barWater').style.width = pWater + '%';
-    document.getElementById('barFood').style.width = pFood + '%';
+      document.getElementById('barFixed').style.width = pFixed + '%';
+      document.getElementById('barTransit').style.width = pTransit + '%';
+      document.getElementById('barWater').style.width = pWater + '%';
+      document.getElementById('barFood').style.width = pFood + '%';
 
-    document.getElementById('ratioText').innerText = 
-      `固定 ${pFixed}% ｜ 接駁 ${pTransit}% ｜ 活動 ${pWater}% ｜ 飲食雜支 ${pFood}%`;
+      document.getElementById('ratioText').innerText = 
+        `固定大項目 ${pFixed}% ｜ 接駁 ${pTransit}% ｜ 水上活動 ${pWater}% ｜ 飲食雜支 ${pFood}%`;
+    }
+  }
+
+  function setVal(id, val) {
+    document.getElementById(id).value = val;
+    calculateCustomBudget();
+  }
+
+  function resetToDefault() {
+    document.getElementById('inpHsr').value = 2980;
+    document.getElementById('inpHotel').value = 2304;
+    document.getElementById('inpBoat').value = 420;
+    document.getElementById('inpMoto').value = 400;
+    document.getElementById('inpTransit').value = 450;
+    document.getElementById('inpWater').value = 450;
+    document.getElementById('inpFood').value = 1650;
+    document.getElementById('inpMisc').value = 400;
+    calculateCustomBudget();
   }
 
   // 拖曳邏輯
@@ -749,8 +891,7 @@
     closeModal();
   }
 
-  // 初始計算
-  window.onload = updateBudget;
+  window.onload = calculateCustomBudget;
 </script>
 
 </body>
