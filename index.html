@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小琉球智慧排程與自訂預算看板</title>
+  <title>小琉球智慧排程與雲端即時同步看板</title>
+  
+  <!-- 引入 Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --primary: #0284c7;
@@ -37,20 +42,29 @@
       margin-bottom: 16px;
       text-align: center;
       box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+      position: relative;
     }
     header h1 { font-size: 1.6rem; margin-bottom: 4px; }
-    .badge-bar {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-    }
-    .badge {
-      background: rgba(255, 255, 255, 0.22);
+    
+    /* 雲端同步狀態標籤 */
+    .sync-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.25);
       padding: 4px 12px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
+      margin-top: 6px;
+    }
+    .sync-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #10b981;
+    }
+    .sync-dot.saving { background: #facc15; animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
     /* 預算區塊 */
@@ -70,11 +84,7 @@
       gap: 10px;
       margin-bottom: 14px;
     }
-    .section-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-    }
+    .section-title { font-size: 1.15rem; font-weight: 700; color: var(--primary-dark); }
 
     .metric-grid {
       display: grid;
@@ -135,7 +145,7 @@
     .board-controls h2 { font-size: 1.15rem; font-weight: 700; color: var(--primary-dark); }
     .helper-tip { font-size: 0.82rem; color: #0369a1; background: var(--primary-light); padding: 4px 10px; border-radius: 6px; font-weight: 600; }
 
-    /* 看板 Grid (水平滾動) */
+    /* 看板 Grid */
     .board {
       display: flex;
       gap: 16px;
@@ -152,16 +162,8 @@
       min-height: 540px;
       transition: all 0.2s ease;
     }
-    /* 灰底實線欄位 (時間軸) */
-    .column.timeline-col {
-      background: #e2e8f0;
-      border: 1px solid #cbd5e1;
-    }
-    /* 虛線白底欄位 (備用池) */
-    .column.pool-col {
-      background: #f8fafc;
-      border: 2px dashed #94a3b8;
-    }
+    .column.timeline-col { background: #e2e8f0; border: 1px solid #cbd5e1; }
+    .column.pool-col { background: #f8fafc; border: 2px dashed #94a3b8; }
 
     .col-header {
       display: flex;
@@ -189,14 +191,7 @@
       margin-bottom: 10px;
     }
     .start-time-input {
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2px 4px;
-      font-weight: 700;
-      color: var(--primary-dark);
-      background: white;
-      width: 70px;
-      text-align: center;
+      border: 1px solid var(--border); border-radius: 4px; padding: 2px 4px; font-weight: 700; color: var(--primary-dark); background: white; width: 70px; text-align: center;
     }
 
     .card-list {
@@ -231,23 +226,11 @@
       align-items: flex-start;
       margin-bottom: 4px;
     }
-    .time-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .time-wrapper { display: flex; align-items: center; gap: 6px; }
     .block-time {
-      font-size: 0.78rem;
-      font-weight: 800;
-      background: #f1f5f9;
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: #334155;
+      font-size: 0.78rem; font-weight: 800; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #334155;
     }
-    .block-dur {
-      font-size: 0.7rem;
-      color: var(--muted);
-    }
+    .block-dur { font-size: 0.7rem; color: var(--muted); }
     .block-actions { display: flex; gap: 6px; }
     .btn-icon {
       background: none; border: none; color: #94a3b8; font-size: 0.9rem; cursor: pointer; line-height: 1; padding: 0 2px;
@@ -284,7 +267,7 @@
     }
     .btn-main:hover { background: var(--primary-dark); }
 
-    /* Modal 彈窗通用樣式 */
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -311,47 +294,28 @@
     }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 
-    /* 時間模式切換 Tab */
-    .time-mode-switch {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
+    .time-mode-switch { display: flex; gap: 6px; margin-bottom: 8px; }
     .time-mode-btn {
-      flex: 1;
-      padding: 6px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: center;
-      color: var(--muted);
+      flex: 1; padding: 6px; font-size: 0.78rem; font-weight: 600; background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; text-align: center; color: var(--muted);
     }
-    .time-mode-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
+    .time-mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1>小琉球 3天2夜 智慧順延看板與預算工具</h1>
-    <div class="badge-bar">
-      <span class="badge">📅 2026/10/09 - 10/11</span>
-      <span class="badge">🏠 裡裡家 Lily Coliving (三民路)</span>
-      <span class="badge">訂單號：6190.339.517</span>
+    <h1>小琉球 3天2夜 共同編輯行程看板</h1>
+    <div class="sync-status">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncText">雲端已連線同步</span>
     </div>
   </header>
 
   <!-- 1. 預算區域 -->
   <section class="budget-section">
     <div class="section-header">
-      <div class="section-title">📊 預算支出清單（項目可自由增減、改名與輸入金額）</div>
+      <div class="section-title">📊 預算支出清單（修改後自動同步給對方）</div>
       <button class="btn-main" onclick="addNewBudgetItem()">+ 新增支出項目</button>
     </div>
 
@@ -380,285 +344,23 @@
   <div class="board-controls">
     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
       <h2>📋 智慧排程看板</h2>
-      <span class="helper-tip">✨ 支援指定時間或時長！拖動時依時長自動骨牌順延</span>
+      <span class="helper-tip">✨ 兩人皆可拖曳修改，自動即時儲存！</span>
     </div>
     <button class="btn-main" onclick="openAddColModal()">+ 新增天數 / 欄位</button>
   </div>
 
-  <div class="board" id="boardContainer">
-
-    <!-- Day 1 -->
-    <div class="column timeline-col" data-col-type="timeline">
-      <div class="col-header">
-        <input type="text" class="col-title-input" value="Day 1：10/9 (五) 抵達與夕陽">
-        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
-      </div>
-      <div class="day-start-row">
-        <span>⏰ 當日出發首發時間：</span>
-        <input type="text" class="start-time-input" value="07:30" onchange="rippleColumnTimes(this.closest('.column'))">
-      </div>
-      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
-        
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="transit" data-duration="125">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">07:30 - 09:35</span>
-              <span class="block-dur">(125分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">台北搭高鐵往左營</div>
-          <div class="block-desc">高鐵直奔左營站。</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="transit" data-duration="100">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">09:35 - 11:15</span>
-              <span class="block-dur">(100分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">接駁車至東港 ➔ 搭船登島</div>
-          <div class="block-desc">接駁直達碼頭，取票搭船登島。</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="120">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">11:15 - 13:15</span>
-              <span class="block-dur">(120分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">牽機車 ➔ 裡裡家放行李 ➔ 午餐</div>
-          <div class="block-desc">三民路放行李，附近吃相思麵/起司餅。</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="food" data-duration="120">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">13:15 - 15:15</span>
-              <span class="block-dur">(120分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">海鮮碳烤 BBQ 吃到飽</div>
-          <div class="block-desc">大啖鮮蚵烤肉，享受晚風。</div>
-        </div>
-
-      </div>
-      <button class="add-block-btn" onclick="openAddBlockModal(this)">+ 新增活動積木</button>
-    </div>
-
-    <!-- Day 2 -->
-    <div class="column timeline-col" data-col-type="timeline">
-      <div class="col-header">
-        <input type="text" class="col-title-input" value="Day 2：10/10 (六) 浮潛看海龜">
-        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
-      </div>
-      <div class="day-start-row">
-        <span>⏰ 當日出發首發時間：</span>
-        <input type="text" class="start-time-input" value="08:30" onchange="rippleColumnTimes(this.closest('.column'))">
-      </div>
-      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
-        
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="food" data-duration="60">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">08:30 - 09:30</span>
-              <span class="block-dur">(60分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">洪媽媽早餐店</div>
-          <div class="block-desc">琉球粿、特色早餐。</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="highlight" data-duration="120">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">09:30 - 11:30 ⭐</span>
-              <span class="block-dur">(120分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">熊潛水浮潛看海龜 (加贈照片)</div>
-          <div class="block-desc">近距離與野生海龜共游拍照！</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="90">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">11:30 - 13:00</span>
-              <span class="block-dur">(90分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">回民宿沖澡 ➔ 午餐避暑</div>
-          <div class="block-desc">房間洗澡吹乾更衣，吃芒果冰。</div>
-        </div>
-
-      </div>
-      <button class="add-block-btn" onclick="openAddBlockModal(this)">+ 新增活動積木</button>
-    </div>
-
-    <!-- Day 3 -->
-    <div class="column timeline-col" data-col-type="timeline">
-      <div class="col-header">
-        <input type="text" class="col-title-input" value="Day 3：10/11 (日) 秘境與北返">
-        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
-      </div>
-      <div class="day-start-row">
-        <span>⏰ 當日出發首發時間：</span>
-        <input type="text" class="start-time-input" value="09:00" onchange="rippleColumnTimes(this.closest('.column'))">
-      </div>
-      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
-        
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="90">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">09:00 - 10:30</span>
-              <span class="block-dur">(90分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">百年老榕樹 ＆ 厚石秘境</div>
-          <div class="block-desc">俯瞰厚石魚澳，拍攝海景。</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="transit" data-duration="45">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">10:30 - 11:15</span>
-              <span class="block-dur">(45分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">裡裡家退房 ➔ 還機車</div>
-          <div class="block-desc">整理行李退房，碼頭交車。</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="transit" data-duration="45">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">11:15 - 12:00</span>
-              <span class="block-dur">(45分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">搭船回東港（避開排隊潮）</div>
-          <div class="block-desc">搭乘中午船班，免去下午排隊苦等。</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="food" data-duration="90">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">12:00 - 13:30</span>
-              <span class="block-dur">(90分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">東港華僑市場海鮮午餐</div>
-          <div class="block-desc">大吃黑鮪魚生魚片與旗魚黑輪。</div>
-        </div>
-
-      </div>
-      <button class="add-block-btn" onclick="openAddBlockModal(this)">+ 新增活動積木</button>
-    </div>
-
-    <!-- 備用候選池 -->
-    <div class="column pool-col" data-col-type="pool">
-      <div class="col-header">
-        <input type="text" class="col-title-input" value="📦 備用候選活動池">
-        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
-      </div>
-      <div class="day-start-row" style="opacity: 0.6;">
-        <span>ℹ️ 拖入日程將自動排定時間</span>
-      </div>
-      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
-        
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="leisure" data-duration="90">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">彈性待排</span>
-              <span class="block-dur">(90分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">厚石裙礁吹海風觀星</div>
-          <div class="block-desc">無光害海灘，晚上抬頭看星空。</div>
-        </div>
-
-        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondblclick="editBlock(this)" data-type="highlight" data-duration="120">
-          <div class="block-header">
-            <div class="time-wrapper">
-              <span class="block-time">彈性待排</span>
-              <span class="block-dur">(120分)</span>
-            </div>
-            <div class="block-actions">
-              <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-              <button class="btn-icon" onclick="delBlock(this)">×</button>
-            </div>
-          </div>
-          <div class="block-title">SUP 立式划槳日落團</div>
-          <div class="block-desc">改划槳看夕陽時可拉過去替換。</div>
-        </div>
-
-      </div>
-      <button class="add-block-btn" onclick="openAddBlockModal(this)">+ 新增活動積木</button>
-    </div>
-
-  </div>
+  <div class="board" id="boardContainer"></div>
 </div>
 
 <!-- 新增/編輯積木 Modal -->
 <div class="modal-overlay" id="blockModal">
   <div class="modal">
     <h3 id="modalHead">編輯行程積木</h3>
-    
     <div class="form-group">
       <label>活動名稱 *</label>
       <input type="text" id="modalTitle" placeholder="活動名稱">
     </div>
 
-    <!-- 💡 時間模式切換：依時長 vs 直接指定時間 -->
     <div class="form-group">
       <label>時間設定模式</label>
       <div class="time-mode-switch">
@@ -666,19 +368,16 @@
         <button type="button" class="time-mode-btn" id="btnModeExact" onclick="switchTimeMode('exact')">指定起訖時間</button>
       </div>
 
-      <!-- 模式 A：輸入時長 -->
       <div id="panelDuration">
         <label style="font-size:0.75rem; color:var(--muted);">預計耗時（分鐘）</label>
         <input type="number" id="modalDuration" value="90" min="15" step="15">
       </div>
 
-      <!-- 模式 B：直接指定時間 -->
       <div id="panelExact" style="display:none; gap:6px; align-items:center;">
         <input type="text" id="modalExactStart" placeholder="開始 (如 10:00)" style="flex:1;">
         <span>~</span>
         <input type="text" id="modalExactEnd" placeholder="結束 (如 12:00)" style="flex:1;">
       </div>
-      <small style="color:var(--muted); font-size:0.75rem; margin-top:4px; display:block;">若拖動順序，系統將依本時長自動骨牌順延對齊！</small>
     </div>
 
     <div class="form-group">
@@ -698,18 +397,18 @@
 
     <div class="modal-actions">
       <button class="btn-icon" style="color:var(--muted); font-size:0.85rem;" onclick="closeModal('blockModal')">取消</button>
-      <button class="btn-main" onclick="saveBlock()">儲存</button>
+      <button class="btn-main" onclick="saveBlock()">儲存並同步</button>
     </div>
   </div>
 </div>
 
-<!-- 新增欄位 Modal (可選灰底/虛線) -->
+<!-- 新增欄位 Modal -->
 <div class="modal-overlay" id="columnModal">
   <div class="modal">
     <h3>新增天數 / 欄位</h3>
     <div class="form-group">
       <label>欄位名稱 *</label>
-      <input type="text" id="modalColName" placeholder="例如：Day 4、雨天備案、美食口袋名單">
+      <input type="text" id="modalColName" placeholder="例如：Day 4、雨天備案">
     </div>
     <div class="form-group">
       <label>欄位樣式與功能 *</label>
@@ -718,7 +417,7 @@
         <option value="pool">備用 / 候選區（白底虛線，彈性待排）</option>
       </select>
     </div>
-    <div class="form-group" id="colStartGroup">
+    <div class="form-group">
       <label>首發出發時間（僅時間軸有效）</label>
       <input type="text" id="modalColStartTime" value="09:00">
     </div>
@@ -730,49 +429,139 @@
 </div>
 
 <script>
-  /* ===================== 1. 預算動態管理 ===================== */
-  const defaultBudget = [
-    { name: "台北 ⇄ 左營 高鐵來回", amount: 2980, type: "per" },
-    { name: "裡裡家單人房 2晚 (已訂含稅)", amount: 2304, type: "per" },
-    { name: "東港來回船票 (民宿代訂)", amount: 420, type: "per" },
-    { name: "機車 48hr (兩人一部)", amount: 800, type: "total" },
-    { name: "左營 ⇄ 東港九人座接駁", amount: 450, type: "per" },
-    { name: "熊潛水浮潛看海龜", amount: 450, type: "per" },
-    { name: "3天伙食與海鮮BBQ", amount: 1650, type: "per" },
-    { name: "伴手禮麻花捲與雜支", amount: 400, type: "per" }
-  ];
+  const firebaseConfig = {
+    apiKey: "AIzaSyBzHkI_-19Dit2ZyG0ZBrPISFDqaFHnZIM",
+    authDomain: "liuqiu-trip-8f045.firebaseapp.com",
+    projectId: "liuqiu-trip-8f045",
+    storageBucket: "liuqiu-trip-8f045.firebasestorage.app",
+    messagingSenderId: "168967449687",
+    appId: "1:168967449687:web:084ca52c3ff09c49f04712"
+  };
 
-  function renderBudgetItems() {
-    const container = document.getElementById('budgetContainer');
-    container.innerHTML = '';
-    defaultBudget.forEach((item, index) => {
-      const card = document.createElement('div');
-      card.className = 'budget-item-card';
-      card.innerHTML = `
-        <div class="budget-item-top">
-          <input type="text" class="budget-name-input" value="${item.name}" oninput="defaultBudget[${index}].name = this.value">
-          <button class="btn-del-budget" onclick="deleteBudgetItem(${index})" title="刪除此項">×</button>
-        </div>
-        <div class="budget-item-bottom">
-          <select class="budget-type-select" onchange="defaultBudget[${index}].type = this.value; calcBudget();">
-            <option value="per" ${item.type === 'per' ? 'selected' : ''}>每人分攤</option>
-            <option value="total" ${item.type === 'total' ? 'selected' : ''}>雙人總額</option>
-          </select>
-          <div>
-            <span style="font-size:0.8rem; color:var(--muted)">NT$</span>
-            <input type="number" class="budget-val-input" value="${item.amount}" oninput="defaultBudget[${index}].amount = parseInt(this.value) || 0; calcBudget();">
-          </div>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-    calcBudget();
+  // 初始化 Firebase
+  let db = null;
+  let tripRef = null;
+  let isRemoteUpdate = false; // 防止循環觸發監聽
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    tripRef = db.ref('liuqiu_shared_trip');
+  } catch (e) {
+    console.warn("Firebase 未設定或發生錯誤，目前僅於本地運行。請貼上有效的 firebaseConfig！", e);
   }
 
-  function calcBudget() {
+  // 預設資料結構（若雲端第一次打開是空的，會以這份寫入雲端）
+  const initialData = {
+    budget: [
+      { name: "台北 ⇄ 左營 高鐵來回", amount: 2980, type: "per" },
+      { name: "裡裡家單人房 2晚 (已訂含稅)", amount: 2304, type: "per" },
+      { name: "東港來回船票 (民宿代訂)", amount: 420, type: "per" },
+      { name: "機車 48hr (兩人一部)", amount: 800, type: "total" },
+      { name: "左營 ⇄ 東港九人座接駁", amount: 450, type: "per" },
+      { name: "熊潛水浮潛看海龜", amount: 450, type: "per" },
+      { name: "3天伙食與海鮮BBQ", amount: 1650, type: "per" },
+      { name: "伴手禮麻花捲與雜支", amount: 400, type: "per" }
+    ],
+    columns: [
+      {
+        title: "Day 1：10/9 (五) 抵達與夕陽",
+        style: "timeline",
+        startTime: "07:30",
+        blocks: [
+          { title: "台北搭高鐵往左營", duration: 125, type: "transit", desc: "高鐵直奔左營站。" },
+          { title: "接駁車至東港 ➔ 搭船登島", duration: 100, type: "transit", desc: "九人座接駁約50分鐘，取票搭船。" },
+          { title: "牽機車 ➔ 裡裡家放行李 ➔ 午餐", duration: 120, type: "leisure", desc: "三民路放行李，吃相思麵/起司餅。" },
+          { title: "海鮮碳烤 BBQ 吃到飽", duration: 120, type: "food", desc: "大啖鮮蚵烤肉，享受晚風。" }
+        ]
+      },
+      {
+        title: "Day 2：10/10 (六) 浮潛看海龜",
+        style: "timeline",
+        startTime: "08:30",
+        blocks: [
+          { title: "洪媽媽早餐店", duration: 60, type: "food", desc: "在地早餐琉球粿。" },
+          { title: "熊潛水浮潛看海龜 (加贈照片)", duration: 120, type: "highlight", desc: "近距離與野生海龜共游拍照！" },
+          { title: "回民宿沖澡 ➔ 午餐避暑", duration: 90, type: "leisure", desc: "洗澡更衣吹冷氣吃芒果冰。" }
+        ]
+      },
+      {
+        title: "Day 3：10/11 (日) 秘境與北返",
+        style: "timeline",
+        startTime: "09:00",
+        blocks: [
+          { title: "百年老榕樹 ＆ 厚石秘境", duration: 90, type: "leisure", desc: "拍攝無死角海景。" },
+          { title: "搭船回東港（避開排隊潮）", duration: 45, type: "transit", desc: "搭中午船班，免去下午排隊。" },
+          { title: "東港華僑市場海鮮午餐", duration: 90, type: "food", desc: "大吃黑鮪魚生魚片與旗魚黑輪。" }
+        ]
+      },
+      {
+        title: "📦 備用候選活動池",
+        style: "pool",
+        startTime: "09:00",
+        blocks: [
+          { title: "厚石裙礁吹海風觀星", duration: 90, type: "leisure", desc: "無光害海灘看星空。" },
+          { title: "SUP 立式划槳日落團", duration: 120, type: "highlight", desc: "想改划槳看夕陽時替換。" }
+        ]
+      }
+    ]
+  };
+
+  let appState = JSON.parse(JSON.stringify(initialData));
+
+  // 雲端同步：自動儲存資料到 Firebase
+  function pushStateToCloud() {
+    if (!tripRef) return;
+    setSyncIndicator(true);
+    tripRef.set(appState).then(() => {
+      setSyncIndicator(false);
+    }).catch(err => {
+      console.error("雲端同步失敗", err);
+      setSyncIndicator(false);
+    });
+  }
+
+  function setSyncIndicator(isSaving) {
+    const dot = document.getElementById('syncDot');
+    const text = document.getElementById('syncText');
+    if (isSaving) {
+      dot.className = 'sync-dot saving';
+      text.innerText = '正在即時儲存至雲端...';
+    } else {
+      dot.className = 'sync-dot';
+      text.innerText = '雲端已即時同步 (所有人可見)';
+    }
+  }
+
+  // 雲端監聽：任何人修改，所有打開網頁的人立即渲染最新畫面
+  if (tripRef) {
+    tripRef.on('value', (snapshot) => {
+      const cloudData = snapshot.val();
+      if (cloudData) {
+        isRemoteUpdate = true;
+        appState = cloudData;
+        renderAll();
+        isRemoteUpdate = false;
+      } else {
+        // 資料庫是空的，初始化寫入
+        pushStateToCloud();
+      }
+    });
+  }
+
+  /* ===================== 渲染介面 ===================== */
+  function renderAll() {
+    renderBudget();
+    renderBoard();
+  }
+
+  function renderBudget() {
+    const container = document.getElementById('budgetContainer');
+    container.innerHTML = '';
     let perPersonSum = 0;
     let groupSum = 0;
-    defaultBudget.forEach(item => {
+
+    appState.budget.forEach((item, index) => {
       if (item.type === 'per') {
         perPersonSum += item.amount;
         groupSum += item.amount * 2;
@@ -780,27 +569,154 @@
         perPersonSum += Math.round(item.amount / 2);
         groupSum += item.amount;
       }
+
+      const card = document.createElement('div');
+      card.className = 'budget-item-card';
+      card.innerHTML = `
+        <div class="budget-item-top">
+          <input type="text" class="budget-name-input" value="${item.name}" onchange="updateBudgetItem(${index}, 'name', this.value)">
+          <button class="btn-del-budget" onclick="deleteBudgetItem(${index})">×</button>
+        </div>
+        <div class="budget-item-bottom">
+          <select class="budget-type-select" onchange="updateBudgetItem(${index}, 'type', this.value)">
+            <option value="per" ${item.type === 'per' ? 'selected' : ''}>每人分攤</option>
+            <option value="total" ${item.type === 'total' ? 'selected' : ''}>雙人總額</option>
+          </select>
+          <div>
+            <span style="font-size:0.8rem; color:var(--muted)">NT$</span>
+            <input type="number" class="budget-val-input" value="${item.amount}" onchange="updateBudgetItem(${index}, 'amount', parseInt(this.value)||0)">
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
     });
+
     document.getElementById('totalPerPerson').innerText = 'NT$ ' + perPersonSum.toLocaleString();
     document.getElementById('totalGroup').innerText = 'NT$ ' + groupSum.toLocaleString();
   }
 
+  function updateBudgetItem(index, field, value) {
+    appState.budget[index][field] = value;
+    renderBudget();
+    pushStateToCloud();
+  }
+
   function addNewBudgetItem() {
-    defaultBudget.push({ name: "新支出項目", amount: 500, type: "per" });
-    renderBudgetItems();
+    appState.budget.push({ name: "新支出項目", amount: 500, type: "per" });
+    renderBudget();
+    pushStateToCloud();
   }
 
   function deleteBudgetItem(index) {
-    defaultBudget.splice(index, 1);
-    renderBudgetItems();
+    appState.budget.splice(index, 1);
+    renderBudget();
+    pushStateToCloud();
   }
 
-  /* ===================== 2. 智慧順延時間對齊引擎 ===================== */
-  function parseTimeToMinutes(timeStr) {
-    if (!timeStr) return 8 * 60;
-    const parts = timeStr.trim().split(':');
-    if (parts.length < 2) return 8 * 60;
-    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  function renderBoard() {
+    const container = document.getElementById('boardContainer');
+    container.innerHTML = '';
+
+    appState.columns.forEach((col, colIndex) => {
+      const colDiv = document.createElement('div');
+      colDiv.className = `column ${col.style === 'timeline' ? 'timeline-col' : 'pool-col'}`;
+      colDiv.setAttribute('data-col-index', colIndex);
+
+      let topRowHtml = col.style === 'timeline'
+        ? `<div class="day-start-row">
+             <span>⏰ 當日出發首發時間：</span>
+             <input type="text" class="start-time-input" value="${col.startTime || '08:30'}" onchange="updateColStartTime(${colIndex}, this.value)">
+           </div>`
+        : `<div class="day-start-row" style="opacity:0.6;"><span>ℹ️ 拖入日程將自動排定時間</span></div>`;
+
+      colDiv.innerHTML = `
+        <div class="col-header">
+          <input type="text" class="col-title-input" value="${col.title}" onchange="updateColTitle(${colIndex}, this.value)">
+          <button class="btn-del-col" onclick="deleteColumn(${colIndex})" title="刪除整欄">🗑️</button>
+        </div>
+        ${topRowHtml}
+        <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)"></div>
+        <button class="add-block-btn" onclick="openAddBlockModal(${colIndex})">+ 新增活動積木</button>
+      `;
+
+      const cardList = colDiv.querySelector('.card-list');
+      let currentMins = parseTimeToMinutes(col.startTime || "08:30");
+
+      col.blocks.forEach((b, blockIndex) => {
+        const duration = b.duration || 60;
+        let timeLabel = "彈性待排";
+        
+        if (col.style === 'timeline') {
+          const sStr = formatMinutesToTime(currentMins);
+          const eMins = currentMins + duration;
+          const eStr = formatMinutesToTime(eMins);
+          timeLabel = `${sStr} - ${eStr}`;
+          currentMins = eMins;
+        }
+
+        const blockEl = document.createElement('div');
+        blockEl.className = 'block';
+        blockEl.draggable = true;
+        blockEl.setAttribute('data-type', b.type || 'leisure');
+        blockEl.setAttribute('data-col-index', colIndex);
+        blockEl.setAttribute('data-block-index', blockIndex);
+        blockEl.ondragstart = onDragStart;
+        blockEl.ondragend = onDragEnd;
+        blockEl.ondblclick = () => editBlock(colIndex, blockIndex);
+
+        blockEl.innerHTML = `
+          <div class="block-header">
+            <div class="time-wrapper">
+              <span class="block-time">${timeLabel}</span>
+              <span class="block-dur">(${duration}分)</span>
+            </div>
+            <div class="block-actions">
+              <button class="btn-icon edit-icon" onclick="editBlock(${colIndex}, ${blockIndex})">✏️</button>
+              <button class="btn-icon" onclick="deleteBlock(${colIndex}, ${blockIndex})">×</button>
+            </div>
+          </div>
+          <div class="block-title">${b.title}</div>
+          <div class="block-desc">${b.desc || ''}</div>
+        `;
+        cardList.appendChild(blockEl);
+      });
+
+      container.appendChild(colDiv);
+    });
+  }
+
+  function updateColTitle(colIndex, val) {
+    appState.columns[colIndex].title = val;
+    pushStateToCloud();
+  }
+
+  function updateColStartTime(colIndex, val) {
+    appState.columns[colIndex].startTime = val;
+    renderBoard();
+    pushStateToCloud();
+  }
+
+  function deleteColumn(colIndex) {
+    if (confirm("確定要刪除整個欄位嗎？")) {
+      appState.columns.splice(colIndex, 1);
+      renderBoard();
+      pushStateToCloud();
+    }
+  }
+
+  function deleteBlock(colIndex, blockIndex) {
+    if (confirm("確定要刪除這張活動卡片嗎？")) {
+      appState.columns[colIndex].blocks.splice(blockIndex, 1);
+      renderBoard();
+      pushStateToCloud();
+    }
+  }
+
+  /* ===================== 時間輔助函數 ===================== */
+  function parseTimeToMinutes(str) {
+    if (!str) return 8 * 60;
+    const p = str.split(':');
+    return parseInt(p[0]) * 60 + parseInt(p[1] || 0);
   }
 
   function formatMinutesToTime(mins) {
@@ -809,81 +725,72 @@
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
-  function rippleColumnTimes(column) {
-    if (!column || column.getAttribute('data-col-type') === 'pool') return;
+  /* ===================== 拖曳邏輯 ===================== */
+  let draggedColIndex = null;
+  let draggedBlockIndex = null;
 
-    const startInput = column.querySelector('.start-time-input');
-    let currentMins = parseTimeToMinutes(startInput ? startInput.value : "08:30");
-
-    const blocks = column.querySelectorAll('.card-list .block');
-    blocks.forEach(block => {
-      const duration = parseInt(block.getAttribute('data-duration')) || 60;
-      const startStr = formatMinutesToTime(currentMins);
-      const endMins = currentMins + duration;
-      const endStr = formatMinutesToTime(endMins);
-
-      const timeSpan = block.querySelector('.block-time');
-      const isStar = timeSpan.innerText.includes('⭐') ? ' ⭐' : '';
-      timeSpan.innerText = `${startStr} - ${endStr}${isStar}`;
-      
-      const durSpan = block.querySelector('.block-dur');
-      if (durSpan) durSpan.innerText = `(${duration}分)`;
-
-      currentMins = endMins;
-    });
+  function onDragStart(e) {
+    const block = e.currentTarget;
+    draggedColIndex = parseInt(block.getAttribute('data-col-index'));
+    draggedBlockIndex = parseInt(block.getAttribute('data-block-index'));
+    block.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
   }
 
-  /* ===================== 3. 欄位管理 (灰底 vs 虛線) ===================== */
-  function openAddColModal() {
-    document.getElementById('modalColName').value = '';
-    document.getElementById('columnModal').style.display = 'flex';
+  function onDragEnd(e) {
+    e.currentTarget.classList.remove('dragging');
   }
 
-  function confirmAddColumn() {
-    const name = document.getElementById('modalColName').value.trim();
-    if (!name) { alert("請輸入欄位名稱！"); return; }
-    const style = document.getElementById('modalColStyle').value;
-    const startTime = document.getElementById('modalColStartTime').value.trim() || "09:00";
-
-    const board = document.getElementById('boardContainer');
-    const col = document.createElement('div');
-    col.className = `column ${style === 'timeline' ? 'timeline-col' : 'pool-col'}`;
-    col.setAttribute('data-col-type', style);
-
-    let topRowHtml = style === 'timeline' 
-      ? `<div class="day-start-row">
-           <span>⏰ 當日出發首發時間：</span>
-           <input type="text" class="start-time-input" value="${startTime}" onchange="rippleColumnTimes(this.closest('.column'))">
-         </div>`
-      : `<div class="day-start-row" style="opacity:0.6;">
-           <span>ℹ️ 拖入日程將自動排定時間</span>
-         </div>`;
-
-    col.innerHTML = `
-      <div class="col-header">
-        <input type="text" class="col-title-input" value="${name}">
-        <button class="btn-del-col" onclick="deleteColumn(this)" title="刪除整欄">🗑️</button>
-      </div>
-      ${topRowHtml}
-      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)"></div>
-      <button class="add-block-btn" onclick="openAddBlockModal(this)">+ 新增活動積木</button>
-    `;
-    board.appendChild(col);
-    closeModal('columnModal');
+  function onDragOver(e) {
+    e.preventDefault();
   }
 
-  function deleteColumn(btn) {
-    if (confirm("確定要刪除整個欄位與其中的所有活動卡片嗎？")) {
-      btn.closest('.column').remove();
+  function onDrop(e) {
+    e.preventDefault();
+    const list = e.currentTarget;
+    const targetColDiv = list.closest('.column');
+    const targetColIndex = parseInt(targetColDiv.getAttribute('data-col-index'));
+
+    // 計算落點在第幾個卡片
+    const afterEl = getDragAfterElement(list, e.clientY);
+    let insertIndex;
+    if (afterEl == null) {
+      insertIndex = appState.columns[targetColIndex].blocks.length;
+    } else {
+      insertIndex = parseInt(afterEl.getAttribute('data-block-index'));
     }
+
+    // 移動資料
+    const movingItem = appState.columns[draggedColIndex].blocks.splice(draggedBlockIndex, 1)[0];
+    
+    // 如果同欄且由上往下拖，index 會少 1
+    if (draggedColIndex === targetColIndex && draggedBlockIndex < insertIndex) {
+      insertIndex--;
+    }
+
+    appState.columns[targetColIndex].blocks.splice(insertIndex, 0, movingItem);
+
+    renderBoard();
+    pushStateToCloud();
   }
 
-  /* ===================== 4. 積木拖曳與時間/時長編輯 ===================== */
-  let draggedCard = null;
-  let sourceColumn = null;
-  let currentEditingBlock = null;
-  let targetListForAdd = null;
-  let currentTimeMode = 'duration'; // 'duration' or 'exact'
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.block:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  /* ===================== Modal 管理 ===================== */
+  let editingTarget = null; // { colIndex, blockIndex }
+  let addingColIndex = null;
+  let currentTimeMode = 'duration';
 
   function switchTimeMode(mode) {
     currentTimeMode = mode;
@@ -900,68 +807,9 @@
     }
   }
 
-  function onDragStart(e) {
-    draggedCard = e.currentTarget;
-    sourceColumn = draggedCard.closest('.column');
-    e.currentTarget.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-  }
-
-  function onDragEnd(e) {
-    e.currentTarget.classList.remove('dragging');
-    const targetColumn = draggedCard.closest('.column');
-
-    if (sourceColumn) rippleColumnTimes(sourceColumn);
-    if (targetColumn && targetColumn !== sourceColumn) {
-      if (targetColumn.getAttribute('data-col-type') === 'pool') {
-        const timeSpan = draggedCard.querySelector('.block-time');
-        timeSpan.innerText = '彈性待排';
-      } else {
-        rippleColumnTimes(targetColumn);
-      }
-    }
-
-    draggedCard = null;
-    sourceColumn = null;
-  }
-
-  function onDragOver(e) {
-    e.preventDefault();
-    const list = e.currentTarget;
-    const afterElement = getDragAfterElement(list, e.clientY);
-    if (afterElement == null) {
-      list.appendChild(draggedCard);
-    } else {
-      list.insertBefore(draggedCard, afterElement);
-    }
-  }
-
-  function onDrop(e) { e.preventDefault(); }
-
-  function getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.block:not(.dragging)')];
-    return draggableElements.reduce((closest, child) => {
-      const box = child.getBoundingClientRect();
-      const offset = y - box.top - box.height / 2;
-      if (offset < 0 && offset > closest.offset) {
-        return { offset: offset, element: child };
-      } else {
-        return closest;
-      }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
-  }
-
-  function delBlock(btn) {
-    const col = btn.closest('.column');
-    if (confirm("確定要刪除這張活動卡片嗎？")) {
-      btn.closest('.block').remove();
-      rippleColumnTimes(col);
-    }
-  }
-
-  function openAddBlockModal(btn) {
-    currentEditingBlock = null;
-    targetListForAdd = btn.previousElementSibling;
+  function openAddBlockModal(colIndex) {
+    editingTarget = null;
+    addingColIndex = colIndex;
     document.getElementById('modalHead').innerText = '新增活動積木';
     document.getElementById('modalTitle').value = '';
     document.getElementById('modalDuration').value = 90;
@@ -973,47 +821,28 @@
     document.getElementById('blockModal').style.display = 'flex';
   }
 
-  function editBlock(block) {
-    currentEditingBlock = block;
-    targetListForAdd = null;
+  function editBlock(colIndex, blockIndex) {
+    editingTarget = { colIndex, blockIndex };
+    addingColIndex = null;
+    const b = appState.columns[colIndex].blocks[blockIndex];
+
     document.getElementById('modalHead').innerText = '編輯活動積木';
-    document.getElementById('modalTitle').value = block.querySelector('.block-title').innerText;
-    
-    const dur = block.getAttribute('data-duration') || 90;
-    document.getElementById('modalDuration').value = dur;
-
-    // 嘗試解析現有時間
-    const timeText = block.querySelector('.block-time').innerText.replace(' ⭐', '');
-    if (timeText.includes('-')) {
-      const parts = timeText.split('-');
-      document.getElementById('modalExactStart').value = parts[0].trim();
-      document.getElementById('modalExactEnd').value = parts[1].trim();
-    } else {
-      document.getElementById('modalExactStart').value = '';
-      document.getElementById('modalExactEnd').value = '';
-    }
-
-    document.getElementById('modalDesc').value = block.querySelector('.block-desc').innerText;
-    document.getElementById('modalType').value = block.getAttribute('data-type') || 'leisure';
+    document.getElementById('modalTitle').value = b.title;
+    document.getElementById('modalDuration').value = b.duration || 90;
+    document.getElementById('modalDesc').value = b.desc || '';
+    document.getElementById('modalType').value = b.type || 'leisure';
     switchTimeMode('duration');
     document.getElementById('blockModal').style.display = 'flex';
-  }
-
-  function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-    currentEditingBlock = null;
-    targetListForAdd = null;
   }
 
   function saveBlock() {
     const title = document.getElementById('modalTitle').value.trim();
     if (!title) { alert("請輸入活動名稱！"); return; }
-    
+
     let duration = 90;
     if (currentTimeMode === 'duration') {
       duration = parseInt(document.getElementById('modalDuration').value) || 60;
     } else {
-      // 模式 B：依指定的起訖時間推算分鐘數
       const s = parseTimeToMinutes(document.getElementById('modalExactStart').value);
       const e = parseTimeToMinutes(document.getElementById('modalExactEnd').value);
       duration = e > s ? (e - s) : 60;
@@ -1022,44 +851,55 @@
     const type = document.getElementById('modalType').value;
     const desc = document.getElementById('modalDesc').value.trim();
 
-    if (currentEditingBlock) {
-      currentEditingBlock.setAttribute('data-type', type);
-      currentEditingBlock.setAttribute('data-duration', duration);
-      currentEditingBlock.querySelector('.block-title').innerText = title;
-      currentEditingBlock.querySelector('.block-desc').innerText = desc;
-      rippleColumnTimes(currentEditingBlock.closest('.column'));
-    } else if (targetListForAdd) {
-      const block = document.createElement('div');
-      block.className = 'block';
-      block.draggable = true;
-      block.setAttribute('data-type', type);
-      block.setAttribute('data-duration', duration);
-      block.ondragstart = onDragStart;
-      block.ondragend = onDragEnd;
-      block.ondblclick = function() { editBlock(this); };
-      block.innerHTML = `
-        <div class="block-header">
-          <div class="time-wrapper">
-            <span class="block-time">待排</span>
-            <span class="block-dur">(${duration}分)</span>
-          </div>
-          <div class="block-actions">
-            <button class="btn-icon edit-icon" onclick="editBlock(this.closest('.block'))">✏️</button>
-            <button class="btn-icon" onclick="delBlock(this)">×</button>
-          </div>
-        </div>
-        <div class="block-title">${title}</div>
-        <div class="block-desc">${desc}</div>
-      `;
-      targetListForAdd.appendChild(block);
-      rippleColumnTimes(targetListForAdd.closest('.column'));
+    if (editingTarget) {
+      const target = appState.columns[editingTarget.colIndex].blocks[editingTarget.blockIndex];
+      target.title = title;
+      target.duration = duration;
+      target.type = type;
+      target.desc = desc;
+    } else if (addingColIndex !== null) {
+      appState.columns[addingColIndex].blocks.push({
+        title, duration, type, desc
+      });
     }
+
     closeModal('blockModal');
+    renderBoard();
+    pushStateToCloud();
   }
 
+  function openAddColModal() {
+    document.getElementById('modalColName').value = '';
+    document.getElementById('columnModal').style.display = 'flex';
+  }
+
+  function confirmAddColumn() {
+    const name = document.getElementById('modalColName').value.trim();
+    if (!name) { alert("請輸入欄位名稱！"); return; }
+    const style = document.getElementById('modalColStyle').value;
+    const startTime = document.getElementById('modalColStartTime').value.trim() || "09:00";
+
+    appState.columns.push({
+      title: name,
+      style: style,
+      startTime: startTime,
+      blocks: []
+    });
+
+    closeModal('columnModal');
+    renderBoard();
+    pushStateToCloud();
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+
+  // 初始載入（若未串 Firebase 則載入預設資料）
   window.onload = function() {
-    renderBudgetItems();
-    document.querySelectorAll('.column[data-col-type="timeline"]').forEach(col => rippleColumnTimes(col));
+    if (!tripRef) {
+      renderAll();
+    }
   };
 </script>
 
