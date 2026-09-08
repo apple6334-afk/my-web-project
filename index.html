@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小琉球國慶 3天2夜 互動規劃表</title>
+  <title>小琉球連假 拖曳式行程看板 (支援自訂積木)</title>
   <style>
     :root {
       --primary: #0284c7;
-      --primary-dark: #0369a1;
       --primary-light: #e0f2fe;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text: #0f172a;
       --muted: #64748b;
-      --border: #e2e8f0;
-      --radius: 12px;
+      --border: #cbd5e1;
+      --radius: 10px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,372 +21,561 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.6;
       padding: 16px;
+      line-height: 1.5;
     }
 
-    .container { max-width: 960px; margin: 0 auto; }
+    .container { max-width: 1200px; margin: 0 auto; }
 
     header {
       background: linear-gradient(135deg, #0284c7, #0d9488);
       color: white;
-      padding: 24px;
+      padding: 20px;
       border-radius: var(--radius);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    header h1 { font-size: 1.6rem; margin-bottom: 6px; }
-    header p { font-size: 0.9rem; opacity: 0.9; }
-
-    .tag-container {
+      margin-bottom: 16px;
       display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 10px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
     }
-    .tag {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 4px 10px;
+    header h1 { font-size: 1.5rem; }
+    .badge {
+      background: rgba(255, 255, 255, 0.25);
+      padding: 4px 12px;
       border-radius: 20px;
       font-size: 0.8rem;
     }
 
-    .grid {
+    /* 看板網格 */
+    .board {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-    @media (min-width: 768px) {
-      .grid-2 { grid-template-columns: 1.1fr 0.9fr; }
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      align-items: start;
     }
 
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 20px;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      margin-bottom: 20px;
-    }
-
-    h2 {
-      font-size: 1.15rem;
-      color: var(--primary);
-      margin-bottom: 12px;
-      border-bottom: 2px solid var(--primary-light);
-      padding-bottom: 6px;
-    }
-
-    /* 費用清單表格 */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
-      margin-bottom: 12px;
-    }
-    th, td {
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-    }
-    th { background-color: var(--primary-light); color: var(--primary-dark); }
-    .price-num { font-weight: 600; text-align: right; }
-
-    /* 互動選項 */
-    .calc-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
-      background: #fafafa;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 6px;
-      font-size: 0.85rem;
-    }
-
-    /* 總額大字 */
-    .total-panel {
-      background: linear-gradient(135deg, #e0f2fe, #f0fdf4);
-      border: 2px solid var(--primary);
-      border-radius: var(--radius);
-      padding: 16px;
-      text-align: center;
-      margin-top: 12px;
-    }
-    .total-amount { font-size: 1.8rem; font-weight: bold; color: var(--primary-dark); }
-
-    /* 水上活動連結 */
-    .link-list {
-      list-style: none;
-    }
-    .link-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: 0.85rem;
-    }
-    .btn-link {
-      background: var(--primary);
-      color: white;
-      text-decoration: none;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-    }
-    .btn-link:hover { background: var(--primary-dark); }
-
-    /* 行程項目 */
-    .todo-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 8px 0;
-      border-bottom: 1px dashed var(--border);
-      font-size: 0.85rem;
-    }
-    .todo-item.done { text-decoration: line-through; color: var(--muted); }
-    .time-badge {
+    /* 欄位 Column */
+    .column {
       background: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 540px;
+      border: 1px solid #cbd5e1;
+    }
+    .column.pool-col {
+      background: #f8fafc;
+      border: 2px dashed #94a3b8;
+    }
+
+    .col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .col-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1e293b;
+    }
+    .col-badge {
       font-size: 0.75rem;
-      font-weight: 600;
+      background: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      color: var(--muted);
+      font-weight: bold;
+    }
+
+    /* 卡片容器 */
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-grow: 1;
+    }
+
+    /* 積木卡片 Block */
+    .block {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      cursor: grab;
+      user-select: none;
+      border-left: 5px solid var(--primary);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .block:active { cursor: grabbing; }
+    .block.dragging {
+      opacity: 0.35;
+      transform: scale(0.98);
+    }
+
+    /* 依類型著色 */
+    .block[data-type="transit"] { border-left-color: #64748b; }
+    .block[data-type="highlight"] { border-left-color: #0284c7; background: #f0f9ff; }
+    .block[data-type="food"] { border-left-color: #f97316; }
+    .block[data-type="leisure"] { border-left-color: #10b981; }
+
+    .block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+    .block-time {
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #f1f5f9;
       padding: 2px 6px;
       border-radius: 4px;
-      white-space: nowrap;
+      color: #475569;
     }
+    .btn-del {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 4px;
+    }
+    .btn-del:hover { color: #ef4444; }
+
+    .block-title {
+      font-weight: 600;
+      font-size: 0.92rem;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .block-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* 新增卡片按鈕 */
+    .add-block-btn {
+      margin-top: 12px;
+      background: white;
+      border: 1px dashed var(--primary);
+      padding: 8px;
+      border-radius: 6px;
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .add-block-btn:hover { background: var(--primary-light); }
+    .add-block-btn:active { transform: scale(0.99); }
+
+    /* Modal 彈出視窗 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .modal h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #334155;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.88rem;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: #e2e8f0; color: #475569; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1>小琉球 3天2夜 雙人旅行規劃</h1>
-    <p>台北出發・國慶連假免請假・裡裡家 Lily Coliving</p>
-    <div class="tag-container">
-      <span class="tag">📅 2026/10/09 - 10/11</span>
-      <span class="tag">訂單號：6190.339.517</span>
-    </div>
+    <h1>小琉球 3天2夜 自由拖曳行程看板</h1>
+    <div class="badge">💡 點擊下方「+ 新增活動積木」即可自行建立卡片，並可隨意拖曳！</div>
   </header>
 
-  <div class="grid grid-2">
-    <!-- 左側：費用詳列與動態試算 -->
-    <div>
-      <div class="card">
-        <h2>🧾 確切固定開銷清單</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>項目</th>
-              <th>每人分攤</th>
-              <th style="text-align:right;">雙人合計</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>台北 ⇄ 左營 高鐵來回全票</td>
-              <td>$2,980</td>
-              <td class="price-num">$5,960</td>
-            </tr>
-            <tr>
-              <td>裡裡家單人房 2間共2晚 (含稅)</td>
-              <td>$2,304</td>
-              <td class="price-num">$4,608</td>
-            </tr>
-            <tr>
-              <td>東琉線來回船票 (民宿代訂)</td>
-              <td>$420</td>
-              <td class="price-num">$840</td>
-            </tr>
-            <tr>
-              <td>島上機車 48hr (兩人一部/民宿代訂)</td>
-              <td>$400</td>
-              <td class="price-num">$800</td>
-            </tr>
-            <tr style="background:#f1f5f9; font-weight:bold;">
-              <td>固定支出小計</td>
-              <td>$6,104</td>
-              <td class="price-num">$12,208</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h2 style="margin-top:16px;">⚙️ 彈性花費切換試算</h2>
-        <div style="font-size:0.85rem; margin-bottom:6px; font-weight:600;">左營 ⇄ 東港接駁方式：</div>
-        <div class="calc-row">
-          <label><input type="radio" name="transit" value="450" checked onchange="calc()"> 九人座共乘拼車來回 (直達碼頭)</label>
-          <span>$450 /人</span>
-        </div>
-        <div class="calc-row">
-          <label><input type="radio" name="transit" value="250" onchange="calc()"> 台灣好行 9127-D 公車來回</label>
-          <span>$250 /人</span>
-        </div>
-
-        <div style="font-size:0.85rem; margin:10px 0 6px; font-weight:600;">水上活動：</div>
-        <div class="calc-row">
-          <label><input type="radio" name="water" value="450" checked onchange="calc()"> 浮潛看海龜 (含攝影與裝備)</label>
-          <span>$450 /人</span>
-        </div>
-        <div class="calc-row">
-          <label><input type="radio" name="water" value="1250" onchange="calc()"> SUP 立式划槳浪板</label>
-          <span>$1,250 /人</span>
-        </div>
-        <div class="calc-row">
-          <label><input type="radio" name="water" value="0" onchange="calc()"> 不下水純岸上放空</label>
-          <span>$0</span>
-        </div>
-
-        <div style="font-size:0.85rem; margin:10px 0 6px; font-weight:600;">3天伙食與烤肉：</div>
-        <div class="calc-row">
-          <label><input type="radio" name="food" value="1650" checked onchange="calc()"> 經典小吃 + 海鮮BBQ炭烤吃到飽</label>
-          <span>約 $1,650 /人</span>
-        </div>
-        <div class="calc-row">
-          <label><input type="radio" name="food" value="2400" onchange="calc()"> 升級海鮮餐酒館 + 買滿麻花捲</label>
-          <span>約 $2,400 /人</span>
-        </div>
-
-        <div class="total-panel">
-          <div style="font-size:0.85rem; color:var(--muted);">預估全包總花費</div>
-          <div class="total-amount" id="perPersonTotal">NT$ 9,054 /人</div>
-          <div style="font-size:0.85rem; color:var(--muted);">兩人總花費預算：<strong id="groupTotal">NT$ 18,108</strong></div>
-        </div>
+  <div class="board">
+    
+    <!-- Day 1 -->
+    <div class="column" data-day="day1">
+      <div class="col-header">
+        <span class="col-title">Day 1：10/9 (五) 抵達與夕陽</span>
+        <span class="col-badge">Day 1</span>
       </div>
+      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+        
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+          <div class="block-header">
+            <span class="block-time">07:30 - 09:35</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">台北搭高鐵往左營</div>
+          <div class="block-desc">約 09:35 抵達左營站。</div>
+        </div>
 
-      <!-- 水上活動連結卡片 -->
-      <div class="card">
-        <h2>🌊 水上活動快速搜尋與預訂</h2>
-        <ul class="link-list">
-          <li class="link-item">
-            <div>
-              <strong>小琉球 浮潛看海龜（含水下攝影）</strong>
-              <div style="color:var(--muted); font-size:0.75rem;">約 $400 - 450 元 / 人</div>
-            </div>
-            <a href="https://www.kkday.com/zh-tw/product/productlist?keyword=%E5%B0%8F%E7%90%89%E7%90%83%20%E6%B5%AE%E6%BD%9潜" target="_blank" class="btn-link">前往 KKday</a>
-          </li>
-          <li class="link-item">
-            <div>
-              <strong>小琉球 SUP 立槳 / 透明獨木舟</strong>
-              <div style="color:var(--muted); font-size:0.75rem;">約 $1,200 - 1,500 元 / 人</div>
-            </div>
-            <a href="https://www.klook.com/zh-TW/search/result/?query=%E5%B0%8F%E7%90%89%E7%90%83%20SUP" target="_blank" class="btn-link">前往 Klook</a>
-          </li>
-        </ul>
-        <p style="font-size:0.78rem; color:var(--muted); margin-top:6px;">* 亦可於抵達當天直接請裡裡家配合的特約浮潛社安排，價格同樣約 400～450 元。</p>
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+          <div class="block-header">
+            <span class="block-time">09:50 - 11:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">接駁車至東港 ➔ 搭船登島</div>
+          <div class="block-desc">九人座接駁直達碼頭，取票搭船。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+          <div class="block-header">
+            <span class="block-time">12:00 - 14:00</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">牽機車 ➔ 裡裡家放行李 ➔ 午餐</div>
+          <div class="block-desc">先到三民路放行李，吃相思麵/起司餅。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+          <div class="block-header">
+            <span class="block-time">17:00 - 18:00</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">落日亭看夕陽</div>
+          <div class="block-desc">小琉球最經典夕陽據點。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
+          <div class="block-header">
+            <span class="block-time">18:30 - 20:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">海鮮碳烤 BBQ 吃到飽</div>
+          <div class="block-desc">吃鮮蚵烤肉，享受島嶼晚風。</div>
+        </div>
+
       </div>
+      <button class="add-block-btn" onclick="openModal(this)">+ 新增活動積木</button>
     </div>
 
-    <!-- 右側：行程表 -->
-    <div>
-      <div class="card">
-        <h2>📋 3天2夜 建議行程 Check-list</h2>
+    <!-- Day 2 -->
+    <div class="column" data-day="day2">
+      <div class="col-header">
+        <span class="col-title">Day 2：10/10 (六) 浮潛看海龜</span>
+        <span class="col-badge">Day 2</span>
+      </div>
+      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
         
-        <div style="margin-bottom:12px;">
-          <div style="font-weight:bold; color:var(--primary-dark); font-size:0.9rem; margin-bottom:6px;">Day 1：10/9 (五) 登島夕陽</div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">07:30</span> 台北高鐵出發往左營（09:35抵達）</div>
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
+          <div class="block-header">
+            <span class="block-time">08:30 - 09:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
           </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">09:50</span> 搭九人座共乘拼車直達東港碼頭</div>
-          </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">11:00</span> 窗口領船票，搭船登島</div>
-          </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">12:00</span> 牽機車 ➔ 裡裡家放行李 ➔ 吃相思麵</div>
-          </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">14:30</span> 花瓶岩、美人洞望海亭遠眺海龜</div>
-          </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">17:00</span> 落日亭看夕陽 ➔ 晚餐海鮮炭烤吃到飽</div>
-          </div>
+          <div class="block-title">洪媽媽早餐店</div>
+          <div class="block-desc">品嚐在地琉球粿與特色早餐。</div>
         </div>
 
-        <div style="margin-bottom:12px;">
-          <div style="font-weight:bold; color:var(--primary-dark); font-size:0.9rem; margin-bottom:6px;">Day 2：10/10 (六) 浮潛看海龜</div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">08:30</span> 洪媽媽早餐店（琉球粿、蔥油條）</div>
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="highlight">
+          <div class="block-header">
+            <span class="block-time">10:00 - 12:00 ⭐</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
           </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">10:00</span> 浮潛看海龜（光線最佳、浪況平穩）</div>
-          </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">12:30</span> 沖澡更衣 ➔ 吹冷氣吃午餐、芒果冰避暑</div>
-          </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">15:00</span> 蛤板灣貝殼沙灘踏浪、烏鬼洞步道</div>
-          </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">18:30</span> 海鮮熱炒聚餐 ➔ 買伴手禮麻花捲</div>
-          </div>
+          <div class="block-title">熊潛水浮潛看海龜 (加贈照片)</div>
+          <div class="block-desc">美人洞/花瓶岩/龍蝦洞，近距離看海龜拍照！</div>
         </div>
 
-        <div>
-          <div style="font-weight:bold; color:var(--primary-dark); font-size:0.9rem; margin-bottom:6px;">Day 3：10/11 (日) 避開人潮北返</div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">09:00</span> 百年老榕樹秘境俯瞰厚石裙礁</div>
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+          <div class="block-header">
+            <span class="block-time">12:30 - 14:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
           </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">11:00</span> 裡裡家退房 ➔ 還機車</div>
+          <div class="block-title">回民宿沖澡 ➔ 午餐避暑</div>
+          <div class="block-desc">私人衛浴洗頭更衣，吹冷氣吃芒果冰。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+          <div class="block-header">
+            <span class="block-time">15:00 - 17:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
           </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">11:45</span> 搭船回東港（避開下午排隊大潮）</div>
+          <div class="block-title">蛤板灣貝殼沙灘 ＆ 烏鬼洞</div>
+          <div class="block-desc">威尼斯沙灘踏浪，漫步珊瑚礁迷宮步道。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
+          <div class="block-header">
+            <span class="block-time">18:30 - 20:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
           </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">12:30</span> 華僑市場吃黑鮪魚生魚片、旗魚黑輪</div>
-          </div>
-          <div class="todo-item">
-            <input type="checkbox" onchange="toggleDone(this)">
-            <div><span class="time-badge">14:30</span> 九人座接駁回左營 ➔ 搭高鐵回台北</div>
-          </div>
+          <div class="block-title">海鮮熱炒 / 餐酒館小酌</div>
+          <div class="block-desc">吃新鮮海產，回程順路買麻花捲。</div>
         </div>
 
       </div>
+      <button class="add-block-btn" onclick="openModal(this)">+ 新增活動積木</button>
+    </div>
+
+    <!-- Day 3 -->
+    <div class="column" data-day="day3">
+      <div class="col-header">
+        <span class="col-title">Day 3：10/11 (日) 秘境與北返</span>
+        <span class="col-badge">Day 3</span>
+      </div>
+      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+        
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+          <div class="block-header">
+            <span class="block-time">09:00 - 10:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">百年老榕樹 ＆ 厚石裙礁秘境</div>
+          <div class="block-desc">俯瞰厚石魚澳，拍攝無死角海景。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+          <div class="block-header">
+            <span class="block-time">11:00 - 11:45</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">裡裡家退房 ➔ 還機車</div>
+          <div class="block-desc">整理行李退房，前往碼頭交車。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+          <div class="block-header">
+            <span class="block-time">11:45 - 12:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">搭船回東港（避開排隊大潮）</div>
+          <div class="block-desc">搭乘中午船班，免去下午碼頭排隊苦等。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
+          <div class="block-header">
+            <span class="block-time">12:30 - 14:00</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">東港華僑市場海鮮午餐</div>
+          <div class="block-desc">大吃黑鮪魚生魚片與旗魚黑輪。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="transit">
+          <div class="block-header">
+            <span class="block-time">14:30 - 17:30</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">接駁回左營 ➔ 高鐵回台北</div>
+          <div class="block-desc">搭高鐵返回台北，傍晚舒適到家。</div>
+        </div>
+
+      </div>
+      <button class="add-block-btn" onclick="openModal(this)">+ 新增活動積木</button>
+    </div>
+
+    <!-- 候補/備用活動池 -->
+    <div class="column pool-col" data-day="pool">
+      <div class="col-header">
+        <span class="col-title">📦 靈活替換池 (備用選項)</span>
+        <span class="col-badge">候選</span>
+      </div>
+      <div class="card-list" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+        
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="leisure">
+          <div class="block-header">
+            <span class="block-time">夜間</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">厚石裙礁吹海風觀星</div>
+          <div class="block-desc">無光害海灘，晚上抬頭看星空。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="highlight">
+          <div class="block-header">
+            <span class="block-time">下午日落</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">SUP 立式划槳日落團</div>
+          <div class="block-desc">改划槳看夕陽時可拉過去替換。</div>
+        </div>
+
+        <div class="block" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" data-type="food">
+          <div class="block-header">
+            <span class="block-time">午茶點心</span>
+            <button class="btn-del" onclick="delBlock(this)">×</button>
+          </div>
+          <div class="block-title">海龜燒＋手搖飲放空</div>
+          <div class="block-desc">外帶點心在港口看海。</div>
+        </div>
+
+      </div>
+      <button class="add-block-btn" onclick="openModal(this)">+ 新增備用活動</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- 新增積木 Modal 表單 -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>新增自訂行程積木</h3>
+    <div class="form-group">
+      <label>活動名稱 *</label>
+      <input type="text" id="modalTitle" placeholder="例如：咖啡廳放空、買伴手禮">
+    </div>
+    <div class="form-group">
+      <label>時間區間</label>
+      <input type="text" id="modalTime" placeholder="例如：14:00 - 15:30 或 彈性">
+    </div>
+    <div class="form-group">
+      <label>活動類型（顏色邊線）</label>
+      <select id="modalType">
+        <option value="leisure">觀光放空（綠色）</option>
+        <option value="food">美食與聚餐（橘色）</option>
+        <option value="highlight">亮點體驗/水上活動（藍色）</option>
+        <option value="transit">交通移動（灰色）</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>備註說明</label>
+      <textarea id="modalDesc" rows="2" placeholder="填寫地點、備註或提醒事項..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="confirmAddBlock()">加入看板</button>
     </div>
   </div>
 </div>
 
 <script>
-  function calc() {
-    const fixed = 6104; // 2980高鐵 + 2304住宿 + 420船票 + 400機車
-    const transit = parseInt(document.querySelector('input[name="transit"]:checked').value);
-    const water = parseInt(document.querySelector('input[name="water"]:checked').value);
-    const food = parseInt(document.querySelector('input[name="food"]:checked').value);
+  let draggedCard = null;
+  let targetList = null;
 
-    const perPerson = fixed + transit + water + food;
-    const group = perPerson * 2;
-
-    document.getElementById('perPersonTotal').innerText = 'NT$ ' + perPerson.toLocaleString() + ' /人';
-    document.getElementById('groupTotal').innerText = 'NT$ ' + group.toLocaleString();
+  function onDragStart(e) {
+    draggedCard = e.currentTarget;
+    e.currentTarget.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
   }
 
-  function toggleDone(checkbox) {
-    const parent = checkbox.parentElement;
-    if (checkbox.checked) {
-      parent.classList.add('done');
+  function onDragEnd(e) {
+    e.currentTarget.classList.remove('dragging');
+    draggedCard = null;
+  }
+
+  function onDragOver(e) {
+    e.preventDefault();
+    const list = e.currentTarget;
+    const afterElement = getDragAfterElement(list, e.clientY);
+    if (afterElement == null) {
+      list.appendChild(draggedCard);
     } else {
-      parent.classList.remove('done');
+      list.insertBefore(draggedCard, afterElement);
     }
+  }
+
+  function onDrop(e) { e.preventDefault(); }
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.block:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function delBlock(btn) {
+    if (confirm("確定要刪除這張活動卡片嗎？")) {
+      btn.closest('.block').remove();
+    }
+  }
+
+  function openModal(btn) {
+    targetList = btn.previousElementSibling;
+    document.getElementById('modalTitle').value = '';
+    document.getElementById('modalTime').value = '彈性';
+    document.getElementById('modalDesc').value = '';
+    document.getElementById('modalOverlay').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').style.display = 'none';
+    targetList = null;
+  }
+
+  function confirmAddBlock() {
+    const title = document.getElementById('modalTitle').value.trim();
+    if (!title) {
+      alert("請輸入活動名稱！");
+      return;
+    }
+    const time = document.getElementById('modalTime').value.trim() || "彈性";
+    const type = document.getElementById('modalType').value;
+    const desc = document.getElementById('modalDesc').value.trim();
+
+    const block = document.createElement('div');
+    block.className = 'block';
+    block.draggable = true;
+    block.setAttribute('data-type', type);
+    block.ondragstart = onDragStart;
+    block.ondragend = onDragEnd;
+    block.innerHTML = `
+      <div class="block-header">
+        <span class="block-time">${time}</span>
+        <button class="btn-del" onclick="delBlock(this)">×</button>
+      </div>
+      <div class="block-title">${title}</div>
+      <div class="block-desc">${desc}</div>
+    `;
+
+    if (targetList) {
+      targetList.appendChild(block);
+    }
+    closeModal();
   }
 </script>
 
