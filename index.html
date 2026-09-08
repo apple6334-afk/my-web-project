@@ -130,10 +130,10 @@
     .btn-del-budget { background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px; }
     .btn-del-budget:hover { color: #ef4444; }
 
-    /* 主架構佈局：左側看板 ＋ 右側 Google 地圖清單 */
+    /* 主架構佈局 */
     .main-workspace {
       display: grid;
-      grid-template-columns: 1fr 310px;
+      grid-template-columns: 1fr 320px;
       gap: 20px;
       align-items: start;
     }
@@ -271,7 +271,6 @@
       outline: none;
     }
 
-    /* 隱藏 number 上下微調箭頭，寬度微調至 44px */
     .duration-input::-webkit-outer-spin-button,
     .duration-input::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -364,7 +363,7 @@
     }
     .btn-main:hover { background: var(--primary-dark); }
 
-    /* ================= 3. Google 地圖口袋清單側邊欄 ================= */
+    /* Google 地圖口袋清單側邊欄 */
     .map-sidebar {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -459,6 +458,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      flex: 1;
     }
     .place-name {
       font-size: 0.85rem;
@@ -488,6 +488,7 @@
       color: #334155;
     }
     .btn-map-link:hover { background: #cbd5e1; }
+    
     .btn-add-to-itinerary {
       background: var(--primary-light);
       color: var(--primary-dark);
@@ -501,6 +502,21 @@
     .btn-add-to-itinerary:hover {
       background: var(--primary);
       color: white;
+    }
+
+    /* 刪除口袋地點按鈕 */
+    .btn-del-place {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .btn-del-place:hover {
+      color: #ef4444;
+      background: #fee2e2;
     }
   </style>
 </head>
@@ -543,7 +559,7 @@
     <div class="budget-items-container" id="budgetContainer"></div>
   </section>
 
-  <!-- 2. 主工作區：左側看板 ＋ 右側 Google 地圖清單 -->
+  <!-- 2. 主工作區 -->
   <div class="main-workspace">
     
     <!-- 左側：看板 -->
@@ -559,11 +575,11 @@
       <div class="board" id="boardContainer" ondragover="onColDragOver(event)" ondrop="onColDrop(event)"></div>
     </div>
 
-    <!-- 右側：Google 地圖口袋清單 -->
+    <!-- 右側：Google 地圖口袋清單 (含刪除按鈕) -->
     <aside class="map-sidebar">
       <div class="sidebar-head">
         <h3>📍 地圖口袋清單</h3>
-        <span style="font-size:0.75rem; color:var(--muted)">點＋直接加入行程</span>
+        <span style="font-size:0.75rem; color:var(--muted)">點＋排入行程</span>
       </div>
 
       <div class="add-place-box">
@@ -608,7 +624,6 @@
     console.warn("Firebase 初始化失敗，將以本地模式運行。", e);
   }
 
-  // 預設資料：包含看板、預算、以及預設 Google 地圖景點清單
   const initialData = {
     budget: [
       { name: "台北 ⇄ 左營 高鐵來回", amount: 2980, type: "per" },
@@ -662,7 +677,6 @@
         ]
       }
     ],
-    // 💡 預設 Google 地圖景點清單庫
     savedPlaces: [
       { name: "花瓶岩", cat: "scenic", desc: "地標岩石，常有海龜出沒" },
       { name: "美人洞望海亭", cat: "scenic", desc: "居高臨下俯瞰蔚藍海景" },
@@ -988,7 +1002,6 @@
     places.forEach((p, idx) => {
       if (currentCat !== 'all' && p.cat !== currentCat) return;
 
-      // Google 地圖搜尋網址
       const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('小琉球 ' + p.name)}`;
 
       const item = document.createElement('div');
@@ -1001,20 +1014,25 @@
         <div class="place-btns">
           <a href="${mapUrl}" target="_blank" class="btn-map-link" title="在 Google 地圖開啟定位">🗺️</a>
           <button class="btn-add-to-itinerary" onclick="addPlaceToItinerary('${p.name}', '${p.desc || ''}', '${p.cat}')" title="加入行程">＋</button>
+          <button class="btn-del-place" onclick="deleteCustomPlace(${idx})" title="從清單刪除">🗑️</button>
         </div>
       `;
       list.appendChild(item);
     });
   }
 
-  // 將口袋清單加入第一天（或讓使用者選擇天數）
-  function addPlaceToItinerary(name, desc, cat) {
-    // 預設將活動分類對齊顏色
-    let type = 'leisure';
-    if (cat === 'food') type = 'food';
-    if (cat === 'dessert') type = 'food';
+  function deleteCustomPlace(idx) {
+    if (confirm("確定要將此地點從口袋清單刪除嗎？")) {
+      appState.savedPlaces.splice(idx, 1);
+      renderPlaces();
+      pushStateToCloud();
+    }
+  }
 
-    // 詢問加入哪一天
+  function addPlaceToItinerary(name, desc, cat) {
+    let type = 'leisure';
+    if (cat === 'food' || cat === 'dessert') type = 'food';
+
     const colNames = appState.columns.map((c, i) => `${i + 1}. ${c.title}`).join('\n');
     const choice = prompt(`要將【${name}】加入哪一天？\n請輸入編號：\n${colNames}`, "1");
     if (!choice) return;
